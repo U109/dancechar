@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sf.cemp.fcode.biz.home.daystatistics.repository.mapper.DayStatisticsInfoMapper" >
+<insert id="saveStatic" parameterType="com.sf.cemp.fcode.biz.home.daystatistics.dto.UpdateCalculateReqDTO">
+    INSERT INTO `fcode_code_day_stat_info` (
+        `download_times`,
+        `code_total_num`,
+        `user_num`,
+        `active_user_num`,
+        `use_system_num`,
+        `tool_method_num`,
+        `database_num`,
+        `tables_num`,
+        `start_date`,
+        `end_date`,
+        `create_date`,
+        `update_date`,
+        `delete_flag`,
+        `create_user`,
+        `update_user`
+    )
+    VALUES
+    (
+        #{updateCalculateReqDTO.downloadTimes},
+        #{updateCalculateReqDTO.codeTotalNum},
+        1,
+        #{updateCalculateReqDTO.activeUserNum},
+        #{updateCalculateReqDTO.useSystemNum},
+        #{updateCalculateReqDTO.toolMethodNum} ,
+        #{updateCalculateReqDTO.databaseNum},
+        #{updateCalculateReqDTO.tableNum},
+        NULL,
+        NULL,
+        #{updateCalculateReqDTO.createDate},
+         NOW(),
+        '0',
+        #{updateCalculateReqDTO.createUser},
+        #{updateCalculateReqDTO.updateUser}
+    )
+</insert>
+</mapper>

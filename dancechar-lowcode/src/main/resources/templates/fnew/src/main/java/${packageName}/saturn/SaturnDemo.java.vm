@@ -1,0 +1,33 @@
+package ${packageName}.saturn;
+
+import com.vip.saturn.job.AbstractSaturnJavaJob;
+import com.vip.saturn.job.SaturnJobExecutionContext;
+import com.vip.saturn.job.SaturnJobReturn;
+import com.vip.saturn.job.SaturnSystemReturnCode;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+/**
+ * 类描述：测试job(基于saturn)
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Component
+public class SaturnDemo extends AbstractSaturnJavaJob {
+
+    @Override
+    public SaturnJobReturn handleJavaJob(String jobName, Integer shardItem, String shardParam, SaturnJobExecutionContext saturnJobExecutionContext) {
+        SaturnJobReturn jr = new SaturnJobReturn();
+        try {
+            log.info("SaturnDemo-定时任务执行--开始");
+            jr.setReturnCode(SaturnSystemReturnCode.SUCCESS);
+            log.info("SaturnDemo-定时任务执行--当前分片结束,jobName:{},shardItem:{},shardParam:{}", jobName, shardItem, shardParam);
+        } catch (Exception e) {
+            log.error("SaturnDemo-定时任务执行异常,jobName:{},shardItem:{},shardParam:{}", jobName, shardItem, shardParam, e);
+            jr.setReturnCode(SaturnSystemReturnCode.SYSTEM_FAIL);
+        }
+        return jr;
+    }
+}

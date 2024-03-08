@@ -1,0 +1,48 @@
+package ${packageName};
+
+import com.sf.erui.autoconfigure.disconf.DisconfPropertySourceFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.mybatis.spring.annotation.MapperScan;
+#if ($redisComponentDTO.deployType == 'sentinel')
+import com.sf.cemp.core.framework.redis.old.config.EnableAnotherDefaultRedisCacheConfig;
+import com.sf.cemp.core.framework.redis.old.config.EnableDefaultRedisCacheConfig;
+#end
+/**
+ * 类描述: 启动类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@SpringBootApplication(scanBasePackages = {"com.sf"},exclude= {DataSourceAutoConfiguration.class
+#if ($redisComponentDTO.deployType == 'sentinel')
+        , EnableAnotherDefaultRedisCacheConfig.class
+#end
+})
+@EnableAsync
+@PropertySources({
+        @PropertySource(value = "disconf.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "application.properties", ignoreResourceNotFound = true),
+#foreach ($middleare in $middleareList)
+#if ($middleare == 'KAFKA')
+        @PropertySource(value = "kafka.properties", ignoreResourceNotFound = true),
+#end
+#end
+        @PropertySource(value = "system.properties", ignoreResourceNotFound = true, factory = DisconfPropertySourceFactory.class)}
+)
+@EnableCaching
+@MapperScan({"${packageName}.**.repository.mapper"})
+@Slf4j
+public class ${startupName}Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(${startupName}Application.class, args);
+        log.info("${startupName}Application-启动成功!!!!!");
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "classMap":{
+        "defaultClass":"java.lang.String",
+        "kafkaConfig":"com.sf.cemp.core.framework.kafka.util.KafkaConfigDto"
+    },
+    "kafkaConfig":{
+        "awsmMessagePushV1.kafka.topic":{
+            "consumerSwitch":"off",
+            "clusterName":"esg_cemp_core_jlv1i8po01",
+            "monitorUrl":"http://tkafka-AaKk6T1d-ESG-CEMP-CORE.kafkasit.sfcloud.local:1080/mom-mon/monitor/requestService.pub",
+            "threadCount":2,
+            "token":"ESG_CCSP_CORE_SIT:KKOMfcBE",
+            "topicName":"MEM_GRADE_CHANGE_MESSAGE_WX"
+        },
+        "awsmWanted.kafka.topic":{
+            "consumerSwitch":"off",
+            "clusterName":"other2",
+            "monitorUrl":"http://mommon-other2.intsit.sfdc.com.cn:1080/mom-mon/monitor/requestService.pub",
+            "threadCount":3,
+            "messageGroupSize":"20",
+            "token":"O2O_DDS_ISS_HBASE:DGSvIC5U",
+            "topicName":"EOS_AWSM_CORE_POLICE_WAYBILL_ALL"
+        }
+    }
+}

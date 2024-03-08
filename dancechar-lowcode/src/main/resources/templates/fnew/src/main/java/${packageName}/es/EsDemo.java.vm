@@ -1,0 +1,243 @@
+package ${packageName}.es;
+
+import org.springframework.stereotype.Component;
+#if(${esBaseInfoDTO.esVersion}=='es7.x')
+import com.litian.dancechar.framework.es.dto.QueryAnalysisDTO;
+import com.litian.dancechar.framework.es.util.EsUtil;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.search.aggregations.Aggregations;
+
+import java.util.List;
+import java.util.Map;
+#end
+#if(${esBaseInfoDTO.esVersion}=='es5.x')
+import com.litian.dancechar.framework.es.util.EsUtil;
+import com.litian.dancechar.framework.es.dto.QueryESDTO;
+import com.litian.dancechar.framework.es.dto.UpdateEsReqDTO;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
+#end
+
+import java.util.Map;
+/**
+ * 类描述：Redis使用Demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+public class EsDemo {
+
+#if(${esBaseInfoDTO.esVersion}=='es5.x')
+        /**
+        * 创建索引
+        * @param indexName
+        */
+        public void createIndex(String indexName) {
+            EsUtil.createIndex(indexName);
+        }
+
+        /**
+         * 功能描述：创建类型
+         *
+         * @param index 索引名
+         * @param type  类型
+         */
+        public void createType(String index, String type) {
+            EsUtil.createType(index,type);
+        }
+
+        /**
+         * 功能描述：删除索引
+         *
+         * @param index 索引名
+         */
+        public boolean deleteIndex(String index) {
+            return EsUtil.deleteIndex(index);
+        }
+
+        /**
+         * 功能描述：验证索引是否存在
+         *
+         * @param index 索引名
+         */
+        public boolean indexExist(String index) {
+            return EsUtil.indexExist(index);
+        }
+
+        /**
+         * 功能描述：插入数据
+         *
+         * @param index 索引名
+         * @param type  类型
+         * @param json  数据
+         */
+        public void insertData(String index, String type, Map<String, Object> json) {
+            EsUtil.insertData(index,type,json);
+        }
+
+
+        /**
+         * 功能描述：更新数据
+         *
+         * @param vo 索引名
+         */
+        public void updateData(UpdateEsReqDTO vo) {
+            EsUtil.updateData(vo);
+        }
+
+        /**
+         * 功能描述：删除数据
+         *
+         * @param vo  索引名
+         * @param _id 数据id
+         */
+        public void deleteData(QueryESDTO vo, String _id) {
+            EsUtil.deleteData(vo,_id);
+        }
+
+        /**
+         * 描述: 查询ES
+         *
+         * @param: vo
+         * @param: queryBuilder
+         */
+        public SearchResponse searchES(QueryESDTO vo, QueryBuilder queryBuilder) {
+            return EsUtil.searchES(vo,queryBuilder);
+        }
+
+#end
+#if(${esBaseInfoDTO.esVersion}=='es7.x')
+
+    @Resource
+    private EsUtil esUtil;
+
+    /**
+     * 查看索引是否存在
+     *
+     * @param indexName 索引名
+     */
+        public boolean indexExists(String indexName) {
+            return esUtil.indexExists(indexName);
+        }
+
+        /**
+         * 删除索引
+         *
+         * @param indexName 索引名
+         */
+        public void deleteIndex(String indexName){
+            esUtil.deleteIndex(indexName);
+        }
+
+        /**
+         * 以map的形式新增数据
+         *
+         * @param req
+         * @param indexName
+         * @param id
+         */
+        public void addInMap(String indexName, String id, Map<String, Object> req) {
+            esUtil.addInMap(indexName,id,req);
+        }
+
+        /**
+         * 以json的形式新增数据
+         *
+         * @param reqJson   JSON形式的字符串
+         * @param indexName
+         * @param id
+         */
+        public void addInJson(String indexName, String id, String reqJson) {
+            esUtil.addInJson(indexName,id,reqJson);
+        }
+
+        /**
+         * 利用XContentBuilder 方式插入
+         *
+         * @param contentBuilder
+         * @param indexName
+         * @param id
+         */
+        public void addInContentBuilder(String indexName, String id, Map<String, String> contentBuilder) {
+            esUtil.addInContentBuilder(indexName,id,contentBuilder);
+        }
+
+        /**
+         * 修改索引数据 入参形式map
+         *
+         * @param indexName
+         * @param id
+         * @param updateJson
+         */
+        public void updateInMap(String indexName, String id, Map<String, Object> updateJson) {
+            esUtil.updateInMap(indexName,id,updateJson);
+        }
+
+        /**
+         * 以json的形式修改数据
+         *
+         * @param reqJson   JSON形式的字符串
+         * @param indexName
+         * @param id
+         */
+        public void updateInJson(String indexName, String id, String reqJson) {
+            esUtil.updateInJson(indexName,id,reqJson);
+        }
+
+        /**
+         * 利用XContentBuilder 方式修改
+         *
+         * @param contentBuilder
+         * @param indexName
+         * @param id
+         */
+        public void updateInContentBuilder(String indexName, String id, Map<String, String> contentBuilder) {
+            esUtil.updateInContentBuilder(indexName,id,contentBuilder);
+        }
+
+        /**
+         * 根据id删除index中的数据
+         *
+         * @param indexName
+         * @param id
+         */
+        public void deleteById(String indexName, String id) {
+            esUtil.deleteById(indexName,id);
+        }
+
+        /**
+         * 根据id查询数据
+         *
+         * @param indexName
+         * @param id
+         * @return map
+         */
+        public Map<String, Object> getById(String indexName, String id) {
+            return esUtil.getById(indexName,id);
+        }
+
+
+        public List<Map<String, Object>> query(String indexName, Map<String, String> matchQuery, Map<String, Boolean> sortFieldsToAsc, String[] showFields, int from, int size) {
+            return esUtil.query(indexName,matchQuery,sortFieldsToAsc,showFields,from,size);
+        }
+
+
+        public List<Map<String, Object>> queryRange(String indexName, Map<String, String> matchQuery, Map<String, Map<String, String>> rangeQuery, String[] showFields, int from, int size) {
+            return esUtil.queryRange(indexName,matchQuery,rangeQuery,showFields,from,size);
+        }
+
+        public long countRange(String indexName, Map<String, String> matchQuery, Map<String, Map<String, String>> rangeQuery, int from, int size) {
+            return esUtil.countRange(indexName,matchQuery,rangeQuery,from,size);
+        }
+
+        public BoolQueryBuilder concreteBoolQueryBuilder(Map<String, String> matchQuery, Map<String, Map<String, String>> rangeQuery) {
+            return esUtil.concreteBoolQueryBuilder(matchQuery,rangeQuery);
+        }
+
+        public Aggregations aggregateSumAfterGroup(QueryAnalysisDTO queryESVo, BoolQueryBuilder defaultQueryBuilder) {
+            return esUtil.aggregateSumAfterGroup(queryESVo,defaultQueryBuilder);
+        }
+
+#end
+}

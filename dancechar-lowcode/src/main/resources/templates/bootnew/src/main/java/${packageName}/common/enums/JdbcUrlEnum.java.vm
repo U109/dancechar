@@ -1,0 +1,221 @@
+package ${packageName}.common.enums;
+
+import com.sf.cemp.framework.common.util.object.SfObjectUtil;
+
+/**
+ * 类描述: jdbc链接枚举
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public enum JdbcUrlEnum {
+    /**
+     * sstcoupon online库
+     */
+    SSTCOUPON(1, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstcoupon-mp.db.sfdc.com.cn:3306/sstcoupon?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstcoupon", "B2M44iYle5", "online"),
+    /**
+     * sstuinfo online库
+     */
+    SSTUINFO(2, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstuinfo-mp.db.sfdc.com.cn/sstuinfo?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstuinfo", "bFBdcjQn8d", "online"),
+    /**
+     * sstpoint online库
+     */
+    SSTPOINT(3, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstpoint-mp.db.sfdc.com.cn:3306/sstpoint?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstpoint", "dCT361nvRu", "online"),
+    /**
+     * sst online库
+     */
+    SST(4, "oracle.jdbc.driver.OracleDriver",
+            "jdbc:oracle:thin:@member.db.sfdc.com.cn:1521:member",
+            "memopr", "wxmem_2017#sst", "online"),
+    /**
+     * scs online库
+     */
+    SCS(5, "oracle.jdbc.driver.OracleDriver",
+            "jdbc:oracle:thin:@scs.db.sfdc.com.cn:1521/scs",
+            "scs", "scS%+20173g", "online"),
+    /**
+     * sstbase online库
+     */
+    SSTBASE(6, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstbase-m.db.sfdc.com.cn/sstbase?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstbase", "sstbase", "online"),
+    /**
+     * cempbase online库
+     */
+    CEMPBASE(7, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempbase-m.db.sfcloud.local:3306/cempbase?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempbase", "cempbase_2021", "online"),
+    /**
+     * cps online库
+     */
+    CPS(8, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cps-m.db.sfdc.com.cn:3306/cps?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "cps", "e6Fv7jyOX5", "online"),
+    /**
+     * cempnon online库
+     */
+    CEMPNON(9, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempnonact-m.db.sfdc.com.cn/cempnonact?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempnonact", "l5suNSj2Gx", "online"),
+    /**
+     * cempdiscount online库
+     */
+    CEMPDISCOUNT(10, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempdiscount-m.db.sfcloud.local:3306/cempdiscount?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempdiscount", "cempdiscount_2021", "online"),
+    /**
+     * gamebaser online库
+     */
+    GAMEBASER(11, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://gamebase-m.db.sfcloud.local:3306/gamebase?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "game", "gamebase_2018", "online"),
+    /**
+     * cempgoods online库
+     */
+    CEMPGOODS(12, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempactgood-m.db.sfcloud.local:3306/cempactgood?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true",
+            "cempgoods", "cempactgood_2018", "online"),
+    /**
+     * cempsvip online库
+     */
+    CEMPSVIP(13, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempsvip-m.db.sfdc.com.cn/cempsvip?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "cempsvip", "q7TiGkjrIP", "online"),
+    /**
+     * cempactpush online库
+     */
+    CEMPACTPUSH(14, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://cempactpush-m.db.sfcloud.local/cempactpush?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempactpush", "cempactpush_2021", "online"),
+
+    /**
+     * sstcoupon test库
+     */
+    SSTCOUPON_TEST(100, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstcouponmycat-mp.dbsit.sfcloud.local:3306/sstcoupon?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstcoupon", "ytUFc67m7W", "test"),
+    /**
+     * sstuinfo test库
+     */
+    SSTUINFO_TEST(101, "com.mysql.jdbc.Driver",
+            "jdbc:mysql://sstuinfomycato-mp.dbsit.sfcloud.local:3306/sstuinfo?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstuinfo", "3RfFnYex2u", "test"),
+    /**
+     * sstpoint test库
+     */
+    SSTPOINT_TEST(102, "com.mysql.jdbc.Driver", "jdbc:mysql://sstcouponmycatt-mp.dbsit.sfcloud.local:3306/sstpoint?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "sstcoupon", "ytUFc67m7W", "test"),
+    /**
+     * SST test库
+     */
+    SST_TEST(103, "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@10.202.46.22:1521:member",
+            "memopr", "membertest", "test"),
+    /**
+     * scs test库
+     */
+    SCS_TEST(104, "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@scssit.dbsit.sfdc.com.cn:1521:scssit",
+            "scs", "sfpwd12345#", "test"),
+    /**
+     * sstbase test库
+     */
+    SSTBASE_TEST(105, "com.mysql.jdbc.Driver", "jdbc:mysql://sstbase-m.dbsit.sfcloud.local:3306/sstbase?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+                     "sstbase", "3wInb7QjnF", "test"),
+    /**
+     * cempbase test库
+     */
+    CEMPBASE_TEST(106, "com.mysql.jdbc.Driver", "jdbc:mysql://cempbase-m.dbsit.sfcloud.local:3306/cempbase?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempbase", "qazwsx1234!", "test"),
+    /**
+     * cps test库
+     */
+    CPS_TEST(107, "com.mysql.jdbc.Driver", "jdbc:mysql://sstcps-m.dbsit.sfcloud.local:3306/cps?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true",
+            "cps", "fpj228QGwK", "test"),
+    /**
+     * cempnon test库
+     */
+    CEMPNON_TEST(108, "com.mysql.jdbc.Driver", "jdbc:mysql://cempnon-m.dbsit.sfcloud.local:3306/cempnonact?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempnonact", "tE8h6y767T", "test"),
+    /**
+     * cempdiscount test库
+     */
+    CEMPDISCOUNT_TEST(109, "com.mysql.jdbc.Driver", "jdbc:mysql://cempdiscount-m.dbsit.sfcloud.local:3306/cempdiscount?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "cempdiscount", "sfpwd12345#", "test"),
+    /**
+     * gamebaser test库
+     */
+    GAMEBASER_TEST(110, "com.mysql.jdbc.Driver", "jdbc:mysql://cempdiscount-m.dbsit.sfcloud.local:3306/cempdiscount?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true",
+            "game", "sf123456", "test"),
+    /**
+     * cempgoods test库
+     */
+    CEMPGOODS_TEST(111, "com.mysql.jdbc.Driver", "jdbc:mysql://cempgoods-m.dbsit.sfcloud.local:3306/cempgoods?useUnicode=true&amp;characterEncoding=utf8&amp;allowMultiQueries=true",
+            "cempgoods", "cempgoods123", "test"),
+    /**
+     * cempsvip test库
+     */
+    CEMPSVIP_TEST(112, "com.mysql.jdbc.Driver", "jdbc:mysql://cempsvip-m.dbsit.sfcloud.local/cempsvip?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true",
+            "cempsvip", "5420yrUxtt", "test"),
+    /**
+     * cempactpush test库
+     */
+    CEMPACTPUSH_TEST(113, "com.mysql.jdbc.Driver", "jdbc:mysql://cempactpush-m.dbsit.sfcloud.local:3306/cempactpush?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true&useSSL=false&allowMultiQueries=true",
+            "cempactpush", "sf123456", "test")
+
+    ;
+
+    private Integer id;
+    private String driverClass;
+    private String jdbcURL;
+    private String user;
+    private String pwd;
+    private String env;
+
+
+    JdbcUrlEnum(Integer id, String driverClass, String jdbcURL, String user, String pwd, String env) {
+        this.id = id;
+        this.driverClass = driverClass;
+        this.jdbcURL = jdbcURL;
+        this.user = user;
+        this.pwd = pwd;
+        this.env = env;
+    }
+
+    public static JdbcUrlEnum getById(Integer id) {
+        for (JdbcUrlEnum jdbcUrlEnum : JdbcUrlEnum.values()) {
+            if (SfObjectUtil.equals(id, jdbcUrlEnum.getId())) {
+                return jdbcUrlEnum;
+            }
+        }
+        return null;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public String getJdbcURL() {
+        return jdbcURL;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+}

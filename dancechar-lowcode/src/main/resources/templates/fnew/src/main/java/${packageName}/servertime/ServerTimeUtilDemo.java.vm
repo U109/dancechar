@@ -1,0 +1,27 @@
+package ${packageName}.servertime;
+
+
+import com.sf.cemp.framework.baseservice.client.common.util.ServerTimeUtil;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.framework.domain.Result;
+import org.springframework.stereotype.Component;
+import javax.annotation.Resource;
+import java.util.Date;
+
+/**
+ * 类描述: 获取服务器时间demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+public class ServerTimeUtilDemo{
+
+    @Resource
+    private ServerTimeUtil serverTimeUtil;
+
+    public Result<Date> getById() {
+        Date serverTime = serverTimeUtil.getServerTimeWithDate();
+        return SFResultUtil.success(serverTime);
+    }
+}

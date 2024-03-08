@@ -1,0 +1,50 @@
+package ${packageName}.${functionDir}.repository.dataobject;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.sf.cemp.framework.common.plus.adapter.YYYYMMDDHHMMSSDateAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.*;
+#set($tempBigDecimal = 'yes')
+#set($tempDate = 'yes')
+#foreach ($column in $tableField)
+#if (${column.javaType} == 'BigDecimal' && ${tempBigDecimal} == 'yes')
+import java.math.BigDecimal;
+    #set($tempBigDecimal = 'no')
+#end
+#if (${column.javaType} == 'Date' && ${tempDate} == 'yes')
+import java.util.Date;
+    #set($tempDate = 'no')
+#end
+#end
+import static com.sf.cemp.framework.common.util.date.SfDateUtil.YYYY_MM_DD_HH_MM_SS;
+
+
+/**
+ * 类描述：${className}DO对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+//@TableName("${tableName}")
+@EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ${className}DO {
+
+#foreach ($column in $tableField)
+    /**
+     * ${column.columnComment}
+     */
+#if (${column.javaType} == 'Date')
+    @XmlJavaTypeAdapter(YYYYMMDDHHMMSSDateAdapter.class)
+    @JSONField(format = YYYY_MM_DD_HH_MM_SS)
+#end
+    private ${column.javaType} ${column.javaColumns};
+#end
+}

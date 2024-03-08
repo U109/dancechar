@@ -1,0 +1,27 @@
+package ${packageName}.common.dto;
+
+import lombok.Data;
+import java.io.Serializable;
+
+/**
+ * 类描述: 分组校验
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class BaseParam implements Serializable {
+
+    /**
+     *列表查询必填
+     */
+    public @interface pageListRequired {
+    }
+
+    /**
+     * 保存修改
+     */
+    public @interface addUpdateRequired {
+    }
+
+}

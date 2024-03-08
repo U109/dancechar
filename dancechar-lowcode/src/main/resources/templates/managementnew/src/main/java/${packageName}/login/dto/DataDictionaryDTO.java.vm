@@ -1,0 +1,43 @@
+package ${packageName}.login.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * 类描述：数字字典
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class DataDictionaryDTO implements Serializable {
+
+    @ApiModelProperty(value="产品编码",name="configKey")
+    private String configKey;
+    @ApiModelProperty(value="产品值",name="configValue")
+    private String configValue;
+    @ApiModelProperty(value="代码",name="codeValue")
+    private String codeValue;
+    @ApiModelProperty(value="显示值",name="codeName")
+    private String codeName;
+    @ApiModelProperty(value="字段类型",name="dictionaryClass")
+    private String dictionaryClass;
+    @ApiModelProperty(value="type = 1 产品；type = 2 区域1与地区(城市与地区C)",name="type")
+    private Integer type;
+    private String id;
+    @ApiModelProperty(value="字典类型名称",name="dictionaryName")
+    private String dictionaryName;
+    @ApiModelProperty(value="排序",name="sort")
+    private Long sort;
+    @ApiModelProperty(value="是否显示",name="isDisplay")
+    private String isDisplay;
+    @ApiModelProperty(value="记录修改人",name="updatedBy")
+    private String updatedBy;
+    @ApiModelProperty(value="当前页数",name="currentPage")
+    private int currentPage = 1;
+    @ApiModelProperty(value="每一页显示多少",name="eachPageSize")
+    private int eachPageSize = 10;
+
+}

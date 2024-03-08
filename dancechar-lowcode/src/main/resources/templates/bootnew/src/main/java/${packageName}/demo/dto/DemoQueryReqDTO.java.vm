@@ -1,0 +1,26 @@
+package ${packageName}.demo.dto;
+
+import com.sf.cemp.framework.common.plus.page.BasePage;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+/**
+ * 类描述: demo查询请求DTO
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@ApiModel("demo查询请求DTO")
+public class DemoQueryReqDTO extends BasePage {
+    @ApiModelProperty(value = "主键Id")
+    private Long id;
+
+    @ApiModelProperty("员工工号")
+    private String spNo;
+
+    private String key;
+
+    private String value;
+}

@@ -1,0 +1,32 @@
+package ${packageName}.framework.operatelog;
+
+import lombok.Builder;
+import lombok.Data;
+
+/**
+ * 类描述: 额外的日志参数对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@Builder
+public class LogParam {
+    /**
+     * 关键字
+     */
+    private String remark;
+
+    /**
+     * 操作内容
+     */
+    private String opContent;
+
+    public LogParam() {
+    }
+
+    public LogParam(String remark, String opContent) {
+        this.remark = remark;
+        this.opContent = opContent;
+    }
+}

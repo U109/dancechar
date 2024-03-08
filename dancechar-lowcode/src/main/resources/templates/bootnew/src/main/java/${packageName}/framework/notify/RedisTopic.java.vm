@@ -1,0 +1,40 @@
+package ${packageName}.framework.notify;
+
+import org.apache.commons.compress.utils.Lists;
+
+import java.util.List;
+
+/**
+ * 类描述: 发布订阅topic
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class RedisTopic {
+
+    /**
+     * 短信配置变化topic
+     */
+    public static final String SMS_CONFIG_CHANGE_TOPIC = "smsConfigChangeTopic";
+
+    /**
+     * demo配置变化topic
+     */
+    public static final String DEMO_CONFIG_CHANGE_TOPIC = "demoConfigChangeTopic";
+
+
+    /**
+     * 基础配置变化topic
+     */
+    public static final String COMMON_CONFIG_CHANGE_TOPIC = "commonConfigChangeTopic";
+
+    public static List<String> findTopicList() {
+        List<String> topicList = Lists.newArrayList();
+        topicList.add(SMS_CONFIG_CHANGE_TOPIC);
+        topicList.add(DEMO_CONFIG_CHANGE_TOPIC);
+        topicList.add(COMMON_CONFIG_CHANGE_TOPIC);
+        return topicList;
+    }
+
+
+}

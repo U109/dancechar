@@ -1,0 +1,55 @@
+package com.litian.dancechar.common.common.util;
+
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+
+/**
+ * @author 01396002
+ * @description 导出模板类方法
+ * @date 2020/8/17
+ */
+public class DownloadUtil {
+    private static final Logger logger = LoggerFactory.getLogger(DownloadUtil.class);
+
+    public static void downloadFile(HttpServletResponse response, String filePath, String fileName) {
+        OutputStream responseStream = null;
+        try {
+            byte[] resultBytes = FileUtils.readFileToByteArray(new File(filePath));
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.setContentType("application/octet-stream");
+
+            String name = fileName;
+            String sufix = "";
+            if(fileName.indexOf(".") != -1) {
+                name = fileName.substring(0, fileName.lastIndexOf("."));
+                sufix = fileName.substring(fileName.lastIndexOf("."));
+            }
+            name = URLEncoder.encode(Optional.ofNullable(name).orElse(String.valueOf(System.currentTimeMillis())), StandardCharsets.UTF_8.name());
+            response.setHeader("Content-disposition", "attachment;filename=" + name + sufix);
+
+            responseStream = response.getOutputStream();
+            responseStream.write(resultBytes, 0, resultBytes.length);
+
+            responseStream.flush();
+            response.flushBuffer();
+        } catch (Exception e) {
+            logger.error("下载异常", e);
+            if (null != responseStream) {
+                try {
+                    responseStream.close();
+                } catch (IOException ignored) {
+                    logger.error("关闭异常", e);
+                }
+            }
+        }
+    }
+}

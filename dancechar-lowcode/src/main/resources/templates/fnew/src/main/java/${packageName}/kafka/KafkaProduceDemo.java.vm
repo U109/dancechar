@@ -1,0 +1,137 @@
+package ${packageName}.kafka;
+
+
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import com.sf.cemp.framework.common.util.string.SfStrUtil;
+import com.sf.kafka.api.produce.IKafkaProducer;
+import com.sf.kafka.api.produce.ProduceConfig;
+import com.sf.kafka.api.produce.ProduceOptionalConfig;
+import com.sf.kafka.api.produce.ProducerPool;
+import com.sf.kafka.ex.KafkaException;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 类描述：kafka生产者demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+@Data
+public class KafkaProduceDemo implements InitializingBean, DisposableBean {
+
+
+    private static final String LOG_TOPIC = "ms, topic: ";
+    private static final String LOG_MESSAGE = ", message:\n";
+
+    private static Map<String, IKafkaProducer> KAFKA_PRODUCER_MAP = new HashMap<>();
+
+    /**
+     * 生产者连接池大小
+     */
+    @Value("${demoPoolSize}")
+    private int demoPoolSize = 1;
+    /**
+     * 主题的校验码
+     */
+    @Value("${demoCheckCode}")
+    private String demoCheckCode;
+    /**
+     * KAFKA连接地址
+     */
+    @Value("${demoMonitorUrl}")
+    private String demoMonitorUrl;
+    /**
+     * 主题所在的集群名称
+     */
+    @Value("${demoClusterName}")
+    private String demoClusterName;
+    /**
+     * 主题名称
+     */
+    @Value("${demoTopic}")
+    private String demoTopic;
+
+    /**
+     * 个性化参数模式
+     */
+    @Resource
+    private ProduceOptionalConfig produceOptionalConfig;
+
+    @Value("${demoProduceAutoStartup}")
+    private boolean autoStartup;
+
+
+    @Override
+    public String toString() {
+        return "KafkaProduceListenerContainer [demoPoolSize=" + demoPoolSize
+                + ", demoCheckCode=" + demoCheckCode + ", demoMonitorUrl=" + demoMonitorUrl
+                + ", demoClusterName=" + demoClusterName + ", demoTopic=" + demoTopic
+                + ", produceOptionalConfig=" + produceOptionalConfig
+                + ", autoStartup=" + autoStartup + "]";
+    }
+
+    @Override
+    public void afterPropertiesSet() throws KafkaException {
+        log.info("init KafkaProduceContainer: [demoPoolSize={},demoCheckCode={},demoMonitorUrl={},demoClusterName={}," +
+                "demoTopic={},produceOptionalConfig={},autoStartup={}]",demoPoolSize,demoCheckCode ,demoMonitorUrl ,demoClusterName, demoTopic,
+                produceOptionalConfig , autoStartup);
+
+        if (autoStartup) {
+            Assert.notNull(demoCheckCode, "checkCode can not be null!");
+            Assert.notNull(demoMonitorUrl, "monitorUrl can not be null!");
+            Assert.notNull(demoClusterName, "clusterName can not be null!");
+            Assert.notNull(demoTopic, "topic can not be null!");
+
+            // 主题名称＋分隔符 （固定不变）＋主题的校验码
+            final String topicTokens = demoTopic + ":" + demoCheckCode;
+
+            ProduceConfig produceConfig = new ProduceConfig(demoPoolSize, demoMonitorUrl, demoClusterName, topicTokens);
+
+            // 个性化参数模式
+            IKafkaProducer kafkaProducer = new ProducerPool(produceConfig, produceOptionalConfig);
+            KAFKA_PRODUCER_MAP.put(demoTopic, kafkaProducer);
+            log.info("kafkaProducer:{}", SfJsonUtil.toJsonStr(kafkaProducer));
+        }
+    }
+
+
+    /**
+     * KAFKA单个消息发送: String 方式
+     * @param message 消息
+     */
+    public void sendMessageString(String message) {
+        if (SfStrUtil.isBlank(message)) {
+            log.info("Kafka sends the message is empty...");
+            return;
+        }
+        try {
+            long start = System.currentTimeMillis();
+            IKafkaProducer kafkaProducer = KAFKA_PRODUCER_MAP.get(demoTopic);
+            kafkaProducer.sendString(demoTopic, message);
+            log.info("KAFKA发送消息success, costTime: {}",(System.currentTimeMillis() - start)+ LOG_TOPIC + demoTopic + LOG_MESSAGE + message);
+        } catch (Exception e) {
+            log.error("KAFKA单个消息发送失败,topic={}", demoTopic ,e);
+        }
+    }
+
+
+    @Override
+    public void destroy() throws Exception {
+        if (KAFKA_PRODUCER_MAP.size() > 0) {
+            KAFKA_PRODUCER_MAP.clear();
+        }
+    }
+
+}

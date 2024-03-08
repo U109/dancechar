@@ -1,0 +1,42 @@
+package ${packageName}.framework.notify;
+
+import com.sf.cemp.core.framework.redis.util.SfRedisUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.Topic;
+import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 类描述: redis 消息发送配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+public class RedisMessageConfig {
+    @Resource
+    private SubscribeRedisMessage subscribeMQ;
+    @Resource
+    private SfRedisUtil sfRedisUtil;
+
+    @Bean
+    RedisMessageListenerContainer container(MessageListenerAdapter listenerAdapter) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(sfRedisUtil.getRedisTemplate().getConnectionFactory());
+        List<Topic> topicList = new ArrayList<>();
+        RedisTopic.findTopicList().forEach(topic -> topicList.add(new PatternTopic(topic)));
+        container.addMessageListener(listenerAdapter, topicList);
+        return container;
+    }
+
+    @Bean
+    MessageListenerAdapter listenerAdapter() {
+        return new MessageListenerAdapter(subscribeMQ);
+    }
+}

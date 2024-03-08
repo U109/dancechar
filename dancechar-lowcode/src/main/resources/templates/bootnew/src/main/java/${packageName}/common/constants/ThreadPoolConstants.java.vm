@@ -1,0 +1,19 @@
+package ${packageName}.common.constants;
+
+import com.sf.cemp.framework.common.plus.thread.CustomThreadPoolFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+/**
+ * 类描述: 线程池常量类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class ThreadPoolConstants {
+
+    /**
+     * 公共线程池
+     */
+    public final static ThreadPoolTaskExecutor COMMON_THREAD_POOL_TASK_EXECUTOR = CustomThreadPoolFactory.newFixedThreadPool(32);
+
+}

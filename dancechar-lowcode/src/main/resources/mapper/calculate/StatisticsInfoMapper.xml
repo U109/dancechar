@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sf.cemp.fcode.biz.home.daystatistics.repository.mapper.StatisticsInfoMapper" >
+
+
+    <update id="updatePersionInfo" parameterType="com.sf.cemp.fcode.biz.home.daystatistics.dto.UpdateCalculateReqDTO">
+        update fcode_code_person_info
+        <set>
+            <if test="codeTotalNum != null">
+                code_total_num = code_total_num + #{codeTotalNum},
+            </if>
+            <if test="codeTotalNum != null">
+                tool_method_num =  tool_method_num +#{toolMethodNum},
+            </if>
+        </set>
+        where create_user = #{createUser}  and system_code = #{systemCode} and create_date like CONCAT(#{createDate},'%')
+    </update>
+
+    <update id="updateDayStatisticsInfo" parameterType="com.sf.cemp.fcode.biz.home.daystatistics.dto.UpdateCalculateReqDTO">
+
+    </update>
+
+    <select id="fetchSystemCodeByUser" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT DISTINCT system_code from fcode_scaffold_gen_info where create_user = #{createUser}
+    </select>
+
+    <select id="workSpacePersonInfo" parameterType="com.sf.cemp.fcode.biz.home.daystatistics.dto.UpdateCalculateReqDTO"
+            resultType="com.sf.cemp.fcode.biz.personinfo.dto.WorkSpacePersonInfoDTO">
+        select b.* from (
+                            SELECT t.*, @rownum := @rownum + 1 AS rownum
+                            FROM (SELECT @rownum := 0) r, (select  create_user,sum(code_total_num) as code_total_num ,max(user_org) user_org from fcode_code_person_info group by create_user ORDER BY code_total_num desc
+                                ) AS t ) b
+        where  b.create_user = #{createUser}
+    </select>
+
+
+    <select id="countPersonNum" resultType="java.lang.Integer">
+        select count(1) from fcode_code_person_info where delete_flag = 0
+    </select>
+
+
+    <select id="calculatePersonContributionInTotal" resultType="com.sf.cemp.fcode.biz.personinfo.dto.PersonInfoDTO">
+        SELECT create_user,max(system_name) system_name, sum(code_total_num) code_total_num ,max(user_org) user_org,sum(download_times) download_times from fcode_code_person_info
+        GROUP BY create_user,system_code order by sum(code_total_num) desc
+    </select>
+
+    <select id="calculatePersonContributionInDay" resultType="com.sf.cemp.fcode.biz.personinfo.dto.PersonInfoDTO">
+        SELECT create_date,create_user,max(system_name) system_name, sum(code_total_num) code_total_num ,max(user_org) user_org ,sum(download_times) download_times from fcode_code_person_info
+        where TO_DAYS(create_date) = TO_DAYS(NOW())
+        GROUP BY create_date,create_user,system_code order by sum(code_total_num) desc
+    </select>
+
+</mapper>

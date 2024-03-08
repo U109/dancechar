@@ -1,0 +1,26 @@
+package ${packageName}.login.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * 类描述：用户信息
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class DistrictDTO implements Serializable {
+
+    @ApiModelProperty(value="区部编码",name="areaCode")
+    private String areaCode;
+    @ApiModelProperty(value="区域1 or 0",name="districtFlag")
+    private String districtFlag;
+    @ApiModelProperty(value="姓名",name="empName")
+    private String empName;
+    @ApiModelProperty(value="网点",name="deptCode")
+    private String deptCode;
+
+}

@@ -1,0 +1,12 @@
+package ${packageName}.login.service;
+
+import ${packageName}.login.dto.DistrictDTO;
+
+/**
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+*/
+public interface DistrictService {
+    DistrictDTO getDistrictByEmpNum();
+}

@@ -1,0 +1,28 @@
+package ${packageName}.demo.manager;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${packageName}.demo.dto.DemoDTO;
+import ${packageName}.demo.dto.DemoQueryReqDTO;
+import ${packageName}.demo.repository.dataobject.DemoDO;
+import ${packageName}.demo.repository.mapper.DemoMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+
+/**
+ * 类描述：示例manager
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class DemoManager extends ServiceImpl<DemoMapper, DemoDO> {
+
+    public List<DemoDTO> findList(DemoQueryReqDTO req) {
+        return this.baseMapper.findList(req);
+    }
+
+}

@@ -1,0 +1,33 @@
+package ${packageName}.config;
+
+import com.sf.kafka.api.produce.ProduceOptionalConfig;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 类描述：kafka 配置类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+public class KafkaConfig {
+
+    /**
+     *  请求超时时间
+     */
+    @Value("${requestTimeoutMs}")
+    private int requestTimeoutMs;
+
+    /**
+     *   kafka 推送配置
+     * @return  ProduceOptionalConfig
+     */
+    @Bean
+    public ProduceOptionalConfig produceOptionalConfig(){
+        ProduceOptionalConfig produceOptionalConfig = new ProduceOptionalConfig();
+        produceOptionalConfig.setRequestTimeoutMs(requestTimeoutMs);
+        return produceOptionalConfig;
+    }
+}

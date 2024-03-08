@@ -1,0 +1,39 @@
+package ${packageName}.framework.exception;
+
+import com.sf.cemp.framework.common.base.SFResponseResultCodeEnum;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.framework.domain.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.ConstraintViolationException;
+
+/**
+ * 处理全局异常
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@ControllerAdvice
+@Slf4j
+public class ControllerExceptionAdvice {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseBody
+    public Result<String> processMimpRuntimeException(ConstraintViolationException ex) {
+        return SFResultUtil
+                .error("参数校验异常",
+                        SFResponseResultCodeEnum.ERR_PARAM_ILLEGAL.getCode());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public Result<String> processException(Exception ex) {
+        log.error("未知异常", ex);
+        return SFResultUtil
+                .error("系统异常", "SYSTEM_ERROR");
+    }
+
+}

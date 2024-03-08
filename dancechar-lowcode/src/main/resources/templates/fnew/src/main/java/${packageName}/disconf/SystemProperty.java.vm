@@ -1,0 +1,83 @@
+package ${packageName}.disconf;
+
+import com.baidu.disconf.client.common.annotations.DisconfFile;
+import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
+import com.baidu.disconf.client.common.update.IDisconfUpdate;
+import com.sf.cemp.core.framework.disconf.util.PropertiesUtils;
+import com.sf.cemp.framework.common.util.http.HttpSystemConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * 类描述:
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@DisconfUpdateService(classes = {SystemProperty.class})
+@DisconfFile(filename = "system.properties")
+@Component
+public class SystemProperty implements IDisconfUpdate {
+
+    private static Map<String, String> applicationMap = new HashMap<>();
+
+    public static String getValueFromDisConf(String key) {
+        return applicationMap.get(key);
+    }
+
+    public static String getApplicationName(){
+        return getValueFromDisConf("test.name");
+    }
+
+    public static String getServerPort(){
+        return getValueFromDisConf("test.name");
+    }
+
+    @Autowired
+    private PropertiesUtils propertiesUtils;
+
+    @Override
+    public void reload() {
+        try {
+            String flag = propertiesUtils.getStaticValueFromProperties("disconf.enable.remote.conf");
+            String fileName = SystemProperty.class.getAnnotation(DisconfFile.class).filename();
+            String filePath =
+                propertiesUtils.getStaticValueFromProperties("disconf.user_define_download_dir") + "/"
+                            + fileName;
+            if ("false".equals(flag)){
+                filePath = ResourceUtils.getURL("classpath:").getPath()+ "/" + fileName;
+            }
+            File target = new File(filePath);
+            if (!target.exists()){
+                //文件不存在
+                return;
+            }
+            Properties properties = new Properties();
+            InputStream inputStream = new FileInputStream(target);
+            properties.load(inputStream);
+            applicationMap = new HashMap<String, String>((Map) properties);
+            HttpSystemConfig.setHttpConfig(applicationMap);
+            log.info("applicationMap={}", applicationMap);
+        } catch (Exception e) {
+            log.error("更新disconf失败,{}", e);
+        }
+    }
+
+    /**
+     * 容器重启时初始化内存配置
+     */
+    @PostConstruct
+    public void reloading() {
+        reload();
+    }
+}

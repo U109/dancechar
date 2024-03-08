@@ -1,0 +1,21 @@
+package ${packageName}.demo.listener;
+
+import com.sf.cemp.framework.common.plus.async.eventbus.BaseEvent;
+import lombok.Builder;
+import lombok.Data;
+
+/**
+ * 类描述: demo日志更新事件
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@Builder
+public class DemoLogUpdateEvent extends BaseEvent {
+
+    /**
+     * 更新内容
+     */
+    private String updateContent;
+}

@@ -1,0 +1,50 @@
+package ${packageName}.${functionDir}.dto;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sf.cemp.framework.common.plus.page.BasePage;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import com.sf.cemp.framework.common.plus.adapter.YYYYMMDDHHMMSSDateAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+#set($tempBigDecimal = 'yes')
+#set($tempDate = 'yes')
+#foreach ($column in $tableField)
+#if (${column.javaType} == 'BigDecimal' && ${tempBigDecimal} == 'yes')
+import java.math.BigDecimal;
+    #set($tempBigDecimal = 'no')
+#end
+#if (${column.javaType} == 'Date' && ${tempDate} == 'yes')
+import java.util.Date;
+    #set($tempDate = 'no')
+#end
+#end
+import static com.sf.cemp.framework.common.util.date.SfDateUtil.YYYY_MM_DD_HH_MM_SS;
+
+/**
+ * 类描述: ${genFunctions}查询请求DTO
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@ApiModel("${genFunctions}查询请求DTO")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ${className}QueryReqDTO extends BasePage {
+
+#foreach ($column in $tableField)
+    @ApiModelProperty(value = "${column.columnComment}", name = "${column.javaColumns}", required = false#if (${column.javaType} == 'Date'), dataType = "date", example = "${createDateString}"#else, example = ""#end)
+#if (${column.javaType} == 'Date')
+    @XmlJavaTypeAdapter(YYYYMMDDHHMMSSDateAdapter.class)
+    @JSONField(format = YYYY_MM_DD_HH_MM_SS)
+#end
+    private ${column.javaType} ${column.javaColumns};
+#end
+}

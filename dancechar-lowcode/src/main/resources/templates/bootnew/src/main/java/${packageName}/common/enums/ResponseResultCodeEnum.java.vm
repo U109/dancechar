@@ -1,0 +1,62 @@
+package ${packageName}.common.enums;
+
+import com.sf.cemp.framework.common.base.SFIResultCode;
+
+/**
+ * 类描述: 返回码状态枚举
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public enum ResponseResultCodeEnum implements SFIResultCode {
+    /**
+     * 名字不能重复
+     */
+    NAME_NOT_REPEAT("5000000", "error.rpc.fail", "名字不能重复"),
+    ERR_UPLOAD_FILE("100051", "error.upload.file", "请上传文件或文件有误"),
+    ERR_UPLOAD_FILE_SIZE("100052", "error.upload.file", "您上传的图片过大，图片请勿超过大小限制"),
+    ERR_UPLOAD_TXT_SIZE("100053", "error.upload.file", "您上传的文件过大，文件请勿超过大小限制"),
+    ERR_UPLOAD_TXT_EMPTY("100054", "error.upload.file", "文件不能为空"),
+    /**
+     * ************* 系统异常 ******************
+     */
+    ERR_AUTHENTICATION_FAIL("999996", "error.authentication.fail", "鉴权失败"),
+    ERR_RPC_TIMEOUT("999997", "error.rpc.timeout", "远程服务调用超时"),
+    ERR_RPC_FAIL("999998", "error.rpc.fail", "网络异常，请稍后再试"),
+    ERR_UNKNOWN("999999", "error.rpc.fail", "系统繁忙，请稍后再试");
+    /**
+     * 错误码
+     */
+    private String code;
+
+    /**
+     * 错误信息
+     */
+    private String msg;
+
+    /**
+     * 错误描述
+     */
+    private String desc;
+
+    ResponseResultCodeEnum(String code, String msg, String desc) {
+        this.code = code;
+        this.msg = msg;
+        this.desc = desc;
+    }
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public String getMsg() {
+        return msg;
+    }
+
+    @Override
+    public String getDesc() {
+        return desc;
+    }
+}

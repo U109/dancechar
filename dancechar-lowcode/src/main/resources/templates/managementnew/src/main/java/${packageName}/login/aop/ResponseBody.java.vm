@@ -1,0 +1,89 @@
+package ${packageName}.login.aop;
+
+import ${packageName}.login.dto.DataDictionaryDTO;
+import ${packageName}.login.dto.DistrictDTO;
+import ${packageName}.login.dto.SysDataDictionaryDTO;
+import ${packageName}.login.service.DistrictService;
+import ${packageName}.login.service.SysDataDictionaryService;
+import ${packageName}.login.util.UserSession;
+import com.sf.erui.common.response.MapResponse;
+import com.sf.erui.web.login.LoginController;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
+/**
+ * 解决sfopen 2.0 用户登录后可以做一些额外操作
+ * 
+ * @author ${authorName}
+ * @date ${createDateString}
+ *
+ * @see LoginController#checkLogin(HttpServletRequest, HttpServletResponse)
+ */
+@ControllerAdvice
+public class ResponseBody implements ResponseBodyAdvice {
+
+    @Resource
+    private DistrictService districtService;
+
+    @Resource
+    private SysDataDictionaryService sysDataDictionaryService;
+
+    @Override
+    public boolean supports(MethodParameter returnType, Class converterType) {
+
+        return returnType.getDeclaringClass().getName().equals(LoginController.class.getName())&&returnType.getMethod().getName().equals("checkLogin");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        if(body instanceof  MapResponse) {
+            MapResponse mapResponse = (MapResponse) body;
+            if ("ok".equals(mapResponse.getSucc())){
+                //  调COUPON查询bdus接口获取登入人姓名 网点 地区 以及区域
+                if (StringUtils.isBlank(UserSession.getEmpName())){
+                    DistrictDTO districtDto = districtService.getDistrictByEmpNum();
+                    //  存入用户session  姓名,地区，区域
+                    UserSession.setEmpName(districtDto.getEmpName());
+                    UserSession.setEmpNetCode(districtDto.getDeptCode());
+                    UserSession.setEmpAreaCode(districtDto.getAreaCode());
+                    UserSession.setEmpDistrictFlag(districtDto.getDistrictFlag());
+                }
+                //  将区域返回前端展示
+                mapResponse.getResult().put("district", UserSession.getEmpDistrictFlag());
+                // 地区名称
+                mapResponse.getResult().put("areaCodeName", UserSession.getEmpAreaCode());
+                //  返回登入姓名给前端
+                mapResponse.getResult().put("empName", UserSession.getEmpName());
+                mapResponse.getResult().put("empNo", UserSession.getEmpNum());
+                if(StringUtils.isNotBlank(UserSession.getEmpAreaCode())) {
+                    if("000000Y".equals(UserSession.getEmpAreaCode())) {
+                        // 特殊处理
+                        mapResponse.getResult().put("areaCodeName", "总部");
+                    } else {
+                        DataDictionaryDTO dataDictionaryDTO = new DataDictionaryDTO();
+                        dataDictionaryDTO.setDictionaryClass("sfDistrictCode");
+                        dataDictionaryDTO.setCodeValue(UserSession.getEmpAreaCode());
+                        List<SysDataDictionaryDTO> dictionaryList = sysDataDictionaryService.getDictionaryList(dataDictionaryDTO);
+                        mapResponse.getResult().put("areaCodeName", CollectionUtils.isEmpty(dictionaryList) ? UserSession.getEmpAreaCode() : dictionaryList.get(0).getCodeName());
+                    }
+                }
+            }
+            return mapResponse;
+        }
+
+        return body;
+
+    }
+}

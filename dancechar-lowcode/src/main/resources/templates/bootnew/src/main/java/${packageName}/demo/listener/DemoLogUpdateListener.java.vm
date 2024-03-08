@@ -1,0 +1,24 @@
+package ${packageName}.demo.listener;
+
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.EventListener;
+
+/**
+ * 类描述: demo日志更新
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+public class DemoLogUpdateListener implements EventListener {
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void listener(DemoLogUpdateEvent demoLogUpdateEvent) {
+        log.info("eventbus-收到demo log update-{}", SfJsonUtil.toJsonStr(demoLogUpdateEvent));
+    }
+}

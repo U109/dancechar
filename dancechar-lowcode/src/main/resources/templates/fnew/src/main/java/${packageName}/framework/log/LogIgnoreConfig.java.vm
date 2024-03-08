@@ -1,0 +1,34 @@
+package ${packageName}.framework.log;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 类描述：日志忽略打印配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+@Data
+public class LogIgnoreConfig {
+
+    /**
+     * 配置系统中哪些方法不打印入参
+     * 多个使用英文分号;隔开
+     */
+#set($tmpValue1="${")
+#set($tmpValue2="log.print.input.exclude.method:importxxx}")
+    @Value("${tmpValue1}${tmpValue2}")
+    private String ignoreInParamMethods;
+
+    /**
+     * 配置系统中哪些方法不打印出参
+     * 多个使用英文分号;隔开
+     */
+#set($tmpValue3="${")
+#set($tmpValue4="log.print.output.exclude.method:exportxxx}")
+    @Value("${tmpValue3}${tmpValue4}")
+    private String ignoreOutParamMethods;
+}

@@ -1,0 +1,37 @@
+package ${packageName}.demo.service;
+
+import com.github.pagehelper.PageHelper;
+import ${packageName}.demo.dto.DemoDTO;
+import ${packageName}.demo.dto.DemoQueryReqDTO;
+import ${packageName}.demo.manager.DemoManager;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.cemp.framework.common.plus.page.PageResp;
+import com.sf.cemp.framework.common.plus.page.PageRespUtil;
+import com.sf.framework.domain.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+/**
+ * 类描述：demo service实现
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class DemoService {
+    @Resource
+    private DemoManager demoManager;
+
+    /**
+     * 功能描述: 分页查询列表
+     */
+    public Result<PageResp<DemoDTO>> pageList(DemoQueryReqDTO req) {
+        PageHelper.startPage(req.getPageNo(), req.getPageSize());
+        PageResp<DemoDTO> pageCommon = new PageResp<>();
+        PageRespUtil.buildPageResult(demoManager.findList(req), pageCommon);
+        return SFResultUtil.success(pageCommon);
+    }
+}

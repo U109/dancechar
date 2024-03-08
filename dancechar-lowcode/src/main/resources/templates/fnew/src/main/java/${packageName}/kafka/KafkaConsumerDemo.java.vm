@@ -1,0 +1,30 @@
+package ${packageName}.kafka;
+
+import com.sf.kafka.api.consume.IStringMessageConsumeListener;
+import com.sf.kafka.api.consume.KafkaConsumeRetryException;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+/**
+ * 类描述: kafka消费demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+#foreach ($middleare in $middleareList)
+#if ($middleare == 'KAFKA' && ${fcodeKafkaBaseInfoList})
+@Service("$fcodeKafkaBaseInfoList.get(0).getTopicName()")
+#end
+#end
+#if ($middleare == 'KAFKA' && !${fcodeKafkaBaseInfoList})
+@Service("kafkaconfigkey.kafka.topic")
+#end
+public class KafkaConsumerDemo implements IStringMessageConsumeListener {
+
+
+    @Override
+    public void onMessage(List<String> list) throws KafkaConsumeRetryException {
+
+        list.stream().forEach(System.out::println);
+    }
+}

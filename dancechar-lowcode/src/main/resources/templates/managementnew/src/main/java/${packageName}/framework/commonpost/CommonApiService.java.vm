@@ -1,0 +1,89 @@
+package ${packageName}.framework.commonpost;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.sf.cemp.framework.common.base.SFResponseResultCodeEnum;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.cemp.framework.common.util.http.HttpClientPoolUtils;
+import ${packageName}.login.util.UserSession;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+
+/**
+ * 类描述：公共转发接口
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Service
+public class CommonApiService {
+
+    @Value("${gwUrl}")
+    private String gatewayUrl;
+
+    public Object httpPost(String url, JSONObject param, Map<String, String> header) {
+        String result;
+        try {
+            url = gatewayUrl + url;
+            result = HttpClientPoolUtils.httpPost(url, JSON.toJSONString(param), header);
+            if (StringUtils.isNotBlank(result)) {
+                return result;
+            }
+            return SFResultUtil.error(SFResponseResultCodeEnum.ERR_UNKNOWN);
+        } catch (Exception e) {
+            log.error("通用转发接口 httpPost error,url:{},param:{} ", url, param, e);
+            return SFResultUtil.error(SFResponseResultCodeEnum.ERR_UNKNOWN);
+        }
+    }
+
+    public Object httpGet(String url) {
+        String result;
+        try {
+            url = gatewayUrl + url;
+            result = HttpClientPoolUtils.get(url, null);
+            if (StringUtils.isNotBlank(result)) {
+                return result;
+            }
+            return SFResultUtil.error(SFResponseResultCodeEnum.ERR_UNKNOWN);
+        } catch (Exception e) {
+            log.error("通用转发接口 httpGet error,url:{} ", url, e);
+            return SFResultUtil.error(SFResponseResultCodeEnum.ERR_UNKNOWN);
+        }
+    }
+
+    /**
+     * 组装sessionId header 头
+     * @return header
+     */
+    public Map<String, String> buildHeader() {
+        Map<String, String> header = new HashMap<>();
+        header.put("empNum", UserSession.getEmpNum());
+        header.put("empName", getEmpName());
+        header.put("empAreaCode", UserSession.getEmpAreaCode());
+        header.put("empDistrictFlag", UserSession.getEmpDistrictFlag());
+        header.put("empNetCode", UserSession.getEmpNetCode());
+
+        return header;
+    }
+
+    private String getEmpName() {
+        String empName = null;
+        try {
+            empName = UserSession.getEmpName();
+            if (StringUtils.isNotBlank(empName)) {
+                empName = URLEncoder.encode(empName, "utf-8");
+            }
+        } catch (Exception e) {
+            log.error("url转码失败,empName:{}", empName, e);
+        }
+        return empName;
+    }
+}

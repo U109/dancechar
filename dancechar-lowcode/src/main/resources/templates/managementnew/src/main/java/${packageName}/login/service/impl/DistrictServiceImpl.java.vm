@@ -1,0 +1,42 @@
+package ${packageName}.login.service.impl;
+
+import cn.hutool.json.JSONObject;
+import com.google.common.collect.Maps;
+import com.sf.cemp.framework.common.util.bean.SfBeanUtil;
+import com.sf.cemp.framework.common.util.http.HttpClientPoolUtils;
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import ${packageName}.login.dto.DistrictDTO;
+import ${packageName}.login.service.DistrictService;
+import com.sf.erui.context.UserContext;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+
+/**
+ * @author ${authorName}
+ * @date ${createDateString}
+*/
+@Service
+public class DistrictServiceImpl implements DistrictService {
+
+    @Value("${gwUrl}")
+    private String publicDomain;
+
+    @Override
+    public DistrictDTO getDistrictByEmpNum() {
+        String serviceUrl = publicDomain + "/memberCoupon/querycoupon/queryBdusUserInfo";
+        Map<String,Object> param = Maps.newHashMap();
+        param.put("empNum", UserContext.getCurrentUserName());
+        String result = HttpClientPoolUtils.httpPost(serviceUrl, SfJsonUtil.toJsonStr(param));
+        JSONObject jsonObject = SfJsonUtil.parseObj(result);
+        if (jsonObject.getBool("success")){
+            return SfBeanUtil.toBean(jsonObject.getJSONObject("obj"),DistrictDTO.class);
+        }
+        DistrictDTO districtDTO = new DistrictDTO();
+        districtDTO.setAreaCode("000000Y");
+        districtDTO.setDistrictFlag("0");
+        return districtDTO;
+    }
+}

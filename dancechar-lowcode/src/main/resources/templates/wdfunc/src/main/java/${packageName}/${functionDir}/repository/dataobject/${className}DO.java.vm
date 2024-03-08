@@ -1,0 +1,72 @@
+package ${packageName}.${functionDir}.repository.dataobject;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.sf.cemp.framework.common.plus.adapter.YYYYMMDDHHMMSSDateAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.*;
+#set($tempBigDecimal = 'yes')
+#set($tempDate = 'yes')
+#foreach ($column in $tableField)
+#if (${column.javaType} == 'BigDecimal' && ${tempBigDecimal} == 'yes')
+import java.math.BigDecimal;
+    #set($tempBigDecimal = 'no')
+#end
+#if (${column.javaType} == 'Date' && ${tempDate} == 'yes')
+import java.util.Date;
+    #set($tempDate = 'no')
+#end
+#end
+import static com.sf.cemp.framework.common.util.date.SfDateUtil.YYYY_MM_DD_HH_MM_SS;
+
+
+/**
+ * 类描述：${genFunctions}DO对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@TableName("${tableName}")
+@EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class ${className}DO {
+
+#foreach ($column in $tableField)
+    /**
+     * ${column.columnComment}
+     */
+#if (${column.columnKey} == "PRI")
+    @TableId(type = IdType.AUTO)
+#end
+#if (${column.javaColumns} == "createDate")
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    @XmlJavaTypeAdapter(YYYYMMDDHHMMSSDateAdapter.class)
+    @JSONField(format = YYYY_MM_DD_HH_MM_SS)
+#end
+#if (${column.javaColumns} == "updateDate")
+    @TableField(value = "update_date", fill = FieldFill.INSERT_UPDATE)
+    @XmlJavaTypeAdapter(YYYYMMDDHHMMSSDateAdapter.class)
+    @JSONField(format = YYYY_MM_DD_HH_MM_SS)
+#end
+#if (${column.javaColumns} == "deleteFlag")
+    @TableField(value = "delete_flag", fill = FieldFill.INSERT)
+    @TableLogic
+#end
+#if (${column.javaColumns} == "createUser")
+    @TableField(value = "create_user", fill = FieldFill.INSERT)
+#end
+#if (${column.javaColumns} == "updateUser")
+    @TableField(value = "update_user", fill = FieldFill.INSERT_UPDATE)
+#end
+    private ${column.javaType} ${column.javaColumns};
+#end
+}

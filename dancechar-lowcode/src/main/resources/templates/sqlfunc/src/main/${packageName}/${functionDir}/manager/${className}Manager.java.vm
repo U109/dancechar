@@ -1,0 +1,29 @@
+package ${packageName}.${functionDir}.manager;
+
+import ${packageName}.${functionDir}.dto.${className}DTO;
+import ${packageName}.${functionDir}.dto.${className}QueryReqDTO;
+import ${packageName}.${functionDir}.repository.mapper.${className}Mapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 类描述：${genFunctions}manager
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class ${className}Manager {
+    @Resource
+    private ${className}Mapper ${instanceName}Mapper;
+
+    /**
+     * 功能：查询列表记录
+     */
+    public List<${className}DTO> findList(${className}QueryReqDTO ${instanceName}QueryReqDTO) {
+        return ${instanceName}Mapper.findList(${instanceName}QueryReqDTO);
+    }
+}

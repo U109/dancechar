@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- - Copyright 1999-2011 Alibaba Group. - - Licensed under the Apache License, 
+	Version 2.0 (the "License"); - you may not use this file except in compliance 
+	with the License. - You may obtain a copy of the License at - - http://www.apache.org/licenses/LICENSE-2.0 
+	- - Unless required by applicable law or agreed to in writing, software - 
+	distributed under the License is distributed on an "AS IS" BASIS, - WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. - See the 
+	License for the specific language governing permissions and - limitations 
+	under the License. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:protocol name="rest" port="9026" threads="1000"
+                    contextpath="fcode" server="tomcat" accepts="1000"
+                    extension="com.alibaba.dubbo.rpc.protocol.rest.support.LoggingFilter,
+			com.litian.dancechar.framework.exception.GlobalExceptionHandler"/>
+
+    <dubbo:protocol name="dubbo" port="21880"/>
+
+	<dubbo:service document="codeGenBaseConfigService"
+				   interface="com.litian.dancechar.biz.core.codegen.service.CodeGenBaseConfigService"
+				   ref="codeGenBaseConfigServiceImpl"  protocol="rest,dubbo"  validation="true"
+				   filter="logFilter" />
+
+    <dubbo:service document="systemDBInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.dbmgr.service.SystemDBInfoService"
+                   ref="systemDBInfoServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+
+    <dubbo:service document="codeGenDetailConfigService"
+                   interface="com.litian.dancechar.biz.core.codegen.service.CodeGenDetailConfigService"
+                   ref="codeGenDetailConfigServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="userDBService"
+                   interface="com.litian.dancechar.biz.core.codegen.service.UserDBService"
+                   ref="userDBServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="tplGenService"
+                   interface="com.litian.dancechar.biz.core.tplgen.service.TplGenService"
+                   ref="tplGenServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+
+
+    <dubbo:service document="systemInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.system.service.SystemInfoService"
+                   ref="systemInfoServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="feedbackService"
+                   interface="com.litian.dancechar.biz.sysmgr.feedback.service.FeedbackService"
+                   ref="feedbackServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+
+    <dubbo:service document="scaffoldGenInfoService"
+                   interface="com.litian.dancechar.biz.core.scaffold.service.ScaffoldGenInfoService"
+                   ref="scaffoldGenInfoServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="scaffoldGenDbInfoService"
+                   interface="com.litian.dancechar.biz.core.scaffold.service.ScaffoldGenDbInfoService"
+                   ref="scaffoldGenDbInfoServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="templateInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.template.service.TemplateInfoService"
+                   ref="templateInfoServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="componentPageService"
+                   interface="com.litian.dancechar.biz.core.componentpage.service.ComponentPageService"
+                   ref="componentPageServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+    <dubbo:service document="choosedTableColumnsService"
+                   interface="com.litian.dancechar.biz.core.scaffold.service.ChoosedTableColumnsService"
+                   ref="choosedTableColumnsServiceImpl" protocol="rest,dubbo" validation="true"
+                   filter="logFilter"/>
+
+
+    <dubbo:service document="methodInfoService"
+                   interface="com.litian.dancechar.biz.core.scaffold.service.FuncMethodInfoService"
+                   ref="funcMethodInfoServiceImpl" protocol="rest" validation="true" filter="logFilter"/>
+
+
+    <dubbo:service document="tableDetailInfoService"
+                   interface="com.litian.dancechar.biz.core.tabledetailinfo.service.TableDetailInfoService"
+                   ref="tableDetailInfoServiceImpl" protocol="rest" validation="true" filter="logFilter"/>
+
+    <dubbo:service document="fcodeSysDictDataService"
+                   interface="com.litian.dancechar.biz.sysmgr.sysdict.service.FcodeSysDictDataService"
+                   ref="fcodeSysDictDataServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="fcodeSysDictTypeService"
+                   interface="com.litian.dancechar.biz.sysmgr.sysdict.service.FcodeSysDictTypeService"
+                   ref="fcodeSysDictTypeServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="fcodeRedisInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.redismgr.service.FcodeRedisInfoService"
+                   ref="fcodeRedisInfoServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="fcodeSentinelInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.sentinelmgr.service.FcodeSentinelInfoService"
+                   ref="fcodeSentinelInfoServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="fcodeKafkaInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.kafkamgr.service.FcodeKafkaInfoService"
+                   ref="fcodeKafkaInfoServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="esMgrService"
+                   interface="com.litian.dancechar.biz.sysmgr.esmgr.service.EsMgrService"
+                   ref="esMgrServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+
+    <dubbo:service document="mongodbServiceDemo"
+                   interface="com.litian.dancechar.biz.sysmgr.mongodbmgr.service.MongodbOprService"
+                   ref="mongodbOprServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="fcodeMongodbInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.mongodbmgr.service.FcodeMongodbInfoService"
+                   ref="fcodeMongodbInfoServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="esInfoService"
+                   interface="com.litian.dancechar.biz.sysmgr.esmgr.service.EsInfoService"
+                   ref="esInfoServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+    <dubbo:service document="esOprService"
+                   interface="com.litian.dancechar.biz.sysmgr.esmgr.service.EsOprService"
+                   ref="esOprServiceImpl"  protocol="rest,dubbo"  validation="true"
+                   filter="logFilter" />
+
+</beans>
+
+

@@ -1,0 +1,146 @@
+package ${packageName}.framework.log;
+
+import cn.hutool.core.util.ObjectUtil;
+import com.sf.cemp.framework.common.plus.context.ContextHoldUtil;
+import com.sf.cemp.framework.common.plus.exception.BusinessException;
+import com.sf.cemp.framework.common.util.date.SfDateUtil;
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import lombok.Builder;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * 类描述: 日志工具类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@Builder
+@Slf4j
+public class LogUtil {
+    /**
+     * 操作人
+     */
+    private String operateUser;
+    /**
+     * 调用类
+     */
+    private String invokeClass;
+    /**
+     * 调用方法
+     */
+    private String invokeMethod;
+    /**
+     * 请求的url
+     */
+    private String reqUrl;
+    /**
+     * 请求参数
+     */
+    private Object reqParams;
+    /**
+     * 操作内容
+     */
+    private String operateContent;
+    /**
+     * 返回结果
+     */
+    private Object result;
+
+    /**
+     * 异常信息
+     */
+    private Exception exception;
+
+    /**
+     * 异常信息
+     */
+    private String exceptionMsg;
+
+    /**
+     * 打印 debug级别日志
+     */
+    public void debug() {
+        log.debug(buildLog());
+    }
+
+    /**
+     * 打印 info级别日志
+     */
+    public void info() {
+        log.info(buildLog());
+    }
+
+    /**
+     * 打印 warn级别日志
+     */
+    public void warn() {
+        log.warn(buildLog());
+    }
+
+    /**
+     * 打印 error级别日志
+     */
+    public void error() {
+        if (exception != null) {
+            if (StringUtils.isNotBlank(exceptionMsg)) {
+                log.error(buildLog(), exception, exceptionMsg);
+            } else {
+                log.error(buildLog(), exception);
+            }
+        } else {
+            if (StringUtils.isNotBlank(exceptionMsg)) {
+                log.error(buildLog(), exceptionMsg);
+            } else {
+                log.error(buildLog());
+            }
+        }
+    }
+
+    private String buildLog() {
+        StringBuilder builder = new StringBuilder();
+        if (StringUtils.isNotBlank(ContextHoldUtil.getEmpNum())) {
+            builder.append("操作人:[").append(ContextHoldUtil.getEmpNum())
+                    .append("|")
+                    .append(ContextHoldUtil.getEmpName())
+                    .append("]");
+        } else {
+            builder.append("操作人:[system]");
+        }
+        builder.append(",操作时间:[").append(SfDateUtil.getCurrentDateString()).append("]");
+        if (StringUtils.isNotBlank(invokeClass)) {
+            builder.append(",调用类:[").append(invokeClass).append("]");
+        }
+        if (StringUtils.isNotBlank(invokeMethod)) {
+            builder.append(",调用方法:[").append(invokeMethod).append("]");
+        }
+        if (StringUtils.isNotBlank(reqUrl)) {
+            builder.append(",请求url:[").append(reqUrl).append("]");
+        }
+        if (ObjectUtil.isNotNull(reqParams)) {
+            builder.append(",请求参数:[").append(SfJsonUtil.toJsonStr(reqParams)).append("]");
+        }
+        if (StringUtils.isNotBlank(operateContent)) {
+            builder.append(",操作内容:[").append(operateContent).append("]");
+        }
+        if (ObjectUtil.isNotNull(result)) {
+            builder.append(",返回结果:[").append(SfJsonUtil.toJsonStr(result)).append("]");
+        }
+        return builder.toString();
+    }
+
+    public static void main(String[] args) {
+        LogUtil.builder().operateContent("访问了百度").reqUrl("http://www.baidu.com")
+                .reqParams("a:3,b:5").result("成功").build().debug();
+        LogUtil.builder().invokeClass("DemoService").invokeMethod("pageList").operateContent("访问了百度").reqUrl("http://www.baidu.com")
+                .reqParams("c:7,d:8").result("失败").build().info();
+        LogUtil.builder().operateContent("访问了百度").reqUrl("http://www.baidu.com")
+                .reqParams("a:3,b:5").result("成功").build().warn();
+        LogUtil.builder().operateContent("访问了百度").reqUrl("http://www.baidu.com")
+                .reqParams("c:7,d:8").result("失败").exception(new BusinessException("出错了"))
+                .build().error();
+        log.error("================");
+    }
+}

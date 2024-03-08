@@ -1,0 +1,91 @@
+package ${packageName}.framework.operatelog;
+
+import com.google.common.collect.Maps;
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
+import com.sf.erui.context.SpringContextUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.EventListener;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 类描述: event bus事件工厂
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+public class EventBusFactory {
+
+    private final EventBus eventBus = new EventBus();
+    private static volatile EventBusFactory instance;
+    private final Map<String, Class<? extends EventListener>> registerListener = Maps.newConcurrentMap();
+    private final Map<String, Class<? extends EventListener>> asyncRegisterListener = Maps.newConcurrentMap();
+
+    private final AsyncEventBus asyncEventBus = new AsyncEventBus(
+            new ThreadPoolExecutor(2 * Runtime.getRuntime().availableProcessors(),
+                    2 * Runtime.getRuntime().availableProcessors(),
+                    0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(10000)));
+
+
+    private EventBusFactory() {
+    }
+
+    public static EventBusFactory build() {
+        if (instance == null) {
+            synchronized (EventBusFactory.class) {
+                if (instance == null) {
+                    instance = new EventBusFactory();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void postEvent(BaseEvent event) {
+        eventBus.post(event);
+    }
+
+    public void postAsyncEvent(BaseEvent event) {
+        asyncEventBus.post(event);
+    }
+
+    public void registerEvent(Class<? extends EventListener> clazz) {
+        String clazzName = clazz.getSimpleName();
+        if (registerListener.containsKey(clazzName)) {
+            return;
+        }
+        try {
+            registerListener.put(clazzName, clazz);
+            Object object = SpringContextUtil.getBean(clazz);
+            if (Objects.isNull(object)) {
+                object = asyncRegisterListener.get(clazzName).newInstance();
+            }
+            eventBus.register(object);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void registerAsyncEvent(Class<? extends EventListener> clazz) {
+        String asyncClazzName = clazz.getSimpleName();
+        if (asyncRegisterListener.containsKey(asyncClazzName)) {
+            return;
+        }
+        try {
+            asyncRegisterListener.put(asyncClazzName, clazz);
+            Object object = SpringContextUtil.getBean(clazz);
+            if (Objects.isNull(object)) {
+                object = asyncRegisterListener.get(asyncClazzName).newInstance();
+            }
+            asyncEventBus.register(object);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+}

@@ -1,0 +1,32 @@
+package ${packageName}.login.config;
+
+import ${packageName}.login.interceptor.CheckLoginInterceptor;
+import ${packageName}.login.interceptor.LogoutInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
+ * 解决sfopen 2.0 框架 cas登陆退出前端cookie还可以登陆bug
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ *
+ */
+@Configuration
+public class InterceptorConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册拦截器
+        InterceptorRegistration ir = registry.addInterceptor(new LogoutInterceptor());
+        // 配置拦截的路径
+        ir.addPathPatterns("/admin/logoutType");
+
+        InterceptorRegistration ir1 = registry.addInterceptor(new CheckLoginInterceptor());
+
+        ir1.addPathPatterns("/admin/checkLogin");
+
+    }
+}

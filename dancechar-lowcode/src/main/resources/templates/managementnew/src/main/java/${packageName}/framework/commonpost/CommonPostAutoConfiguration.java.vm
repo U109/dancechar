@@ -1,0 +1,36 @@
+package ${packageName}.framework.commonpost;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static com.sf.erui.autoconfigure.cas.CasAutoConfiguration.CAS_TICKET_VALIDATION_FILTER_ORDER;
+
+/**
+ * 类描述：公共转发接口自动装配
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+public class CommonPostAutoConfiguration {
+    /*
+     * 公共转发过滤器优先级 {@link com.sf.erui.autoconfigure.cas.CasAutoConfiguration }
+     * 在原有过滤器上加 5
+     */
+    public static final int COMMON_POST_FILTER_ORDER = CAS_TICKET_VALIDATION_FILTER_ORDER + 5;
+
+    @Autowired
+    private CommonPostFilter commonPostFilter;
+
+    @Bean(name = "commonPostFilterRegistrationBean")
+    public FilterRegistrationBean<CommonPostFilter> singleSignOutFilterRegistration() {
+        FilterRegistrationBean<CommonPostFilter> commonPostFilterRegistration = new FilterRegistrationBean<>();
+        commonPostFilterRegistration.setName("CommonPostFilter");
+        commonPostFilterRegistration.setFilter(commonPostFilter);
+        commonPostFilterRegistration.addUrlPatterns("/commonRoutePost/*", "/commonRouteGet/*");
+        commonPostFilterRegistration.setOrder(COMMON_POST_FILTER_ORDER);
+        return commonPostFilterRegistration;
+    }
+}

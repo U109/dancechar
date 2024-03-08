@@ -1,0 +1,51 @@
+package ${packageName}.demo;
+
+import ${packageName}.demo.dto.DemoDTO;
+import ${packageName}.demo.manager.DemoManager;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * 类描述：Demo模块测试用例
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class DemoTest{
+
+    @Autowired
+    private DemoService demoService;
+
+    @Before
+    public void init(){
+        demoService = mock(DemoService.class);
+        List<DemoDTO> list = new ArrayList<>();
+        DemoDTO demoDTO = new DemoDTO();
+        demoDTO.setId(1L);
+        demoDTO.setSpNo("1");
+        list.add(demoDTO);
+        when(demoService.findList(null)).thenReturn(SFResultUtil.success(list));
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        List<DemoDTO> list = new ArrayList<>();
+        DemoDTO demoDTO = new DemoDTO();
+        demoDTO.setId(1L);
+        demoDTO.setSpNo("1");
+        //demoDTO.setTotalAmt(new BigDecimal("1.11"));
+        list.add(demoDTO);
+        Assert.assertEquals(demoService.findList(null).getObj(),list);
+    }
+
+}

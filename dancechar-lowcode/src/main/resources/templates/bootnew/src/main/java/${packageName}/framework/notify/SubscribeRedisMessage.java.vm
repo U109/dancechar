@@ -1,0 +1,62 @@
+package ${packageName}.framework.notify;
+
+import cn.hutool.core.util.StrUtil;
+import com.sf.cemp.core.framework.redis.util.SfRedisUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+/**
+ * 类描述: 订阅消息
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Component
+public class SubscribeRedisMessage implements MessageListener {
+    @Resource
+    private SfRedisUtil sfRedisUtil;
+
+    @Override
+    public void onMessage(Message message, byte[] pattern) {
+        RedisSerializer<?> keySerializer = sfRedisUtil.getRedisTemplate()
+                .getKeySerializer();
+        RedisSerializer<?> valueSerializer = sfRedisUtil
+                .getRedisTemplate().getValueSerializer();
+        String topic = (String) keySerializer.deserialize(message.getChannel());
+        if (StrUtil.isEmpty(topic)) {
+            return;
+        }
+        String body = (String) valueSerializer.deserialize(message.getBody());
+        log.info("收到redis消息-topic:{},内容：{}", topic, String.valueOf(body));
+        switch (topic) {
+            case RedisTopic.SMS_CONFIG_CHANGE_TOPIC:
+                handleSmsConfigChange(body);
+                break;
+            case RedisTopic.DEMO_CONFIG_CHANGE_TOPIC:
+                handleDemoConfigChange(body);
+                break;
+            case RedisTopic.COMMON_CONFIG_CHANGE_TOPIC:
+                handleCommonConfigChange(body);
+            default:
+                log.warn("未匹配到对应的topic消费者:{}", topic);
+        }
+    }
+
+    private void handleSmsConfigChange(String body) {
+        log.info("短信配置变化处理-{}", body);
+    }
+
+    private void handleDemoConfigChange(String body) {
+        log.info("demo配置变化处理-{}", body);
+    }
+
+    private void handleCommonConfigChange(String body) {
+        log.info("common配置变化处理-{}", body);
+    }
+}

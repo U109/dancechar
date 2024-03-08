@@ -1,0 +1,36 @@
+package ${packageName}.framework.operatelog;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
+import com.sf.cemp.framework.common.util.http.HttpClientPoolUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+
+import java.util.EventListener;
+import java.util.Objects;
+
+/**
+ * 类描述: 操作日志监听器
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Component
+public class OperateLogListener implements EventListener {
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void listener(OperateLogEvent operateLogEvent) {
+        OperateLogReqDTO operateLogReqDTO = operateLogEvent.getOperateLogReqDTO();
+        if (Objects.nonNull(operateLogReqDTO)) {
+            String httpUrl = operateLogEvent.getCempUrl() + "/cempBase/operateLogService/save";
+            // 设置操作人（重要）
+            MDC.put("empNum", operateLogReqDTO.getOpAccount());
+            String baseR = HttpClientPoolUtils.httpPost(httpUrl, JSONObject.toJSONString(operateLogReqDTO));
+            log.info("请求base操作日志服务返回结果:{}", baseR);
+        }
+    }
+}

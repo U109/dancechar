@@ -1,0 +1,26 @@
+package ${packageName}.demo.controller;
+
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import ${packageName}.framework.operatelog.OperateLogAnnotation;
+import com.sf.framework.domain.Result;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * 类描述：测试controller
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@RestController
+@RequestMapping("test")
+public class TestController {
+
+
+    @PostMapping("deleteById")
+    @OperateLogAnnotation(menuName = "XX功能", menuBtn = "根据id删除XX", opContent="删除", remark="根据id删除XX")
+    public Result<Void> deleteById(Integer id) {
+        return SFResultUtil.success();
+    }
+}

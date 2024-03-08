@@ -1,0 +1,39 @@
+package ${packageName}.config;
+
+import com.sf.cemp.framework.common.util.encrypt.SfEncryptUtil;
+import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * 类描述：手机号加解密配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+@ConfigurationProperties(prefix = "sfdencrypt")
+@Data
+public class SfEncryptConfig {
+    /**
+     * 秘钥索引类型
+     */
+    private int keyIndex;
+    /**
+     * 通用大数据字节索引类型
+     */
+    private int byteKeyIndex;
+    /**
+     * 配置串
+     */
+    private String cfg;
+
+    @Bean
+    public SfEncryptUtil createSfEncryptUtil() {
+        SfEncryptUtil.setKeyIndex(keyIndex);
+        SfEncryptUtil.setByteKeyIndex(byteKeyIndex);
+        SfEncryptUtil.setCfg(cfg);
+        return SfEncryptUtil.getInstance();
+    }
+}

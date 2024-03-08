@@ -1,0 +1,108 @@
+package ${packageName}.demo.cache;
+
+import cn.hutool.core.util.StrUtil;
+import com.google.common.collect.Lists;
+import ${packageName}.common.constants.RedisKeyConstants;
+import ${packageName}.demo.dto.DemoDTO;
+import ${packageName}.demo.dto.DemoQueryReqDTO;
+import ${packageName}.demo.repository.dataobject.DemoDO;
+import com.sf.cemp.core.framework.redis.util.SfRedisUtil;
+import com.sf.cemp.framework.common.util.bean.SfBeanUtil;
+import com.sf.cemp.framework.common.util.collection.SfCollectionUtil;
+import com.sf.cemp.framework.common.util.collection.SfMapUtil;
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 类描述: demo缓存服务类(分布式缓存和本地缓存统一处理)
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class DemoCacheService {
+    @Resource
+    private SfRedisUtil sfRedisUtil;
+
+    /**
+     * 添加缓存数据
+     */
+    public boolean add(DemoDO record) {
+        DemoDTO demoDTO = new DemoDTO();
+        SfBeanUtil.copyNotNull(record, demoDTO);
+        sfRedisUtil.setMap(RedisKeyConstants.Demo.DEMO_LIST, demoDTO.getSpNo(),
+                SfJsonUtil.toJsonStr(demoDTO), 120L);
+        log.info("添加缓存数据成功-{}", record);
+        return true;
+    }
+
+    /**
+     * 添加多个缓存数据
+     */
+    public boolean addMulti(Map<String, String> dataMap) {
+        sfRedisUtil.setMap(RedisKeyConstants.Demo.DEMO_LIST, dataMap);
+        log.info("添加多个缓存数据成功-{}", dataMap);
+        return true;
+    }
+
+    /**
+     * 更新缓存数据
+     */
+    public boolean update(DemoDO record) {
+        DemoDTO demoDTO = new DemoDTO();
+        SfBeanUtil.copyNotNull(record, demoDTO);
+        sfRedisUtil.setMap(RedisKeyConstants.Demo.DEMO_LIST, record.getSpNo(), SfJsonUtil.toJsonStr(demoDTO), 120L);
+        log.info("更新缓存数据成功-{}", record);
+        return true;
+    }
+
+    /**
+     * 获取缓存数据
+     */
+    public DemoDTO getBySpNo(String spNo) {
+        DemoDTO hashValue = new DemoDTO();
+        hashValue.setId(1232L);
+        sfRedisUtil.setMap(RedisKeyConstants.Demo.DEMO_LIST, spNo, SfJsonUtil.toJsonStr(hashValue));
+        String demoDTOStr = sfRedisUtil.getMapStringValue(RedisKeyConstants.Demo.DEMO_LIST, spNo);
+        if (StrUtil.isNotEmpty(demoDTOStr)) {
+            return SfJsonUtil.toBean(demoDTOStr, DemoDTO.class);
+        }
+        return null;
+    }
+
+
+    /**
+     * 获取缓存列表数据
+     */
+    public List<DemoDTO> list(DemoQueryReqDTO queryReqDTO) {
+        log.debug("查询列表缓存数据-{}", queryReqDTO);
+        List<DemoDTO> demoList = Lists.newArrayList();
+        Map<String, String> redisMap = sfRedisUtil.getMap(RedisKeyConstants.Demo.DEMO_LIST);
+        if (SfMapUtil.isNotEmpty(redisMap) && SfCollectionUtil.isNotEmpty(redisMap.values())) {
+            redisMap.values().forEach(v -> demoList.add(SfJsonUtil.toBean(v, DemoDTO.class)));
+            return demoList;
+        }
+        return demoList;
+    }
+
+
+    /**
+     * 删除缓存
+     */
+    public boolean remove() {
+        return true;
+    }
+
+    /**
+     * 缓存重建(用于缓存出问题，调用此方法)
+     */
+    public boolean reBuild() {
+        return true;
+    }
+}

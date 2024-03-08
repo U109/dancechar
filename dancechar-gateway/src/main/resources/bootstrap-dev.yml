@@ -1,0 +1,94 @@
+server:
+  port: 8080
+spring:
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+    database: 8
+    timeout: 5000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: dev
+        register-enabled: true
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        namespace: dev
+        group: dev
+        prefix: dancechar-gateway
+    gateway:
+      locator:
+        enabled: true
+      routes:
+        # 核心服务
+        - id: dancechar-core-service
+          uri: lb://dancechar-core-service
+          predicates:
+            - Path=/api/dancechar/core/**
+        # 基础服务
+        - id: dancechar-base-service
+          uri: lb://dancechar-base-service
+          predicates:
+            - Path=/api/dancechar/base/**
+        #用户权限服务
+        - id: dancechar-system-service
+          uri: lb://dancechar-system-service
+          predicates:
+            - Path=/api/dancechar/system/**
+          filters:
+            # 限流配置
+            - name: RequestRateLimiter
+              args:
+                key-resolver: '#{@remoteAddrKeyResolver}'
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+
+auth:
+  enable: true
+  forbidden:
+    urls: /api/nologin
+  ignore:
+    urls: /api/dancechar/system/auth/loginValidAccountNo,/api/dancechar/system/auth/refreshToken
+  enableSwagger: true
+
+# 暴露actuator监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# feign 配置
+feign:
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+#请求处理的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+  eager-load:
+    enabled: true
+zeus:
+  redis:
+    enabled: true

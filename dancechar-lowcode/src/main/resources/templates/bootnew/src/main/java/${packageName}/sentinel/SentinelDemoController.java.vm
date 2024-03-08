@@ -1,0 +1,36 @@
+package ${packageName}.sentinel;
+
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.sf.framework.domain.Result;
+
+/**
+ * 类描述：sentinel使用Demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@RestController
+public class SentinelDemoController {
+
+    @GetMapping(value = "/findList")
+    @SentinelResource(value = "sentinelDemo-findList", fallback = "fallBackError", blockHandler = "blockHandlerError")
+    public Result<Void> findList() {
+        return SFResultUtil.success();
+    }
+
+    public Result<Void> blockHandlerError(BlockException e) {
+        log.error("sentinelDemo-findList-触发限流机制", Thread.currentThread().getName(), e);
+        return SFResultUtil.error("blockHandlerError", "触发限流，返回为空");
+    }
+
+    public Result<Void> fallBackError() {
+        log.error("sentinelDemo-findList-触发熔断机制", Thread.currentThread().getName());
+        return SFResultUtil.error("fallBackError", "触发熔断，返回为空");
+    }
+}

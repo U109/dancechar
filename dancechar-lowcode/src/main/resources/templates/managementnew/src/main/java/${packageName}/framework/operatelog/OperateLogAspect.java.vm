@@ -1,0 +1,98 @@
+package ${packageName}.framework.operatelog;
+
+import com.alibaba.fastjson.JSON;
+import com.sf.erui.context.UserContext;
+import com.sf.framework.domain.Result;
+import org.apache.commons.lang3.StringUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.Date;
+
+/**
+ * 类描述：操作日志记录切面
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Aspect
+@Configuration
+@Slf4j
+public class OperateLogAspect {
+
+    @Value("${gwUrl}")
+    private String cempUrl;
+
+    @Pointcut(value = "@annotation(${packageName}.framework.operatelog.OperateLogAnnotation)")
+    public void operatePointcut() {
+        log.debug("OperateLogAspect into ....");
+    }
+
+    @AfterReturning(value = "operatePointcut()", returning = "result")
+    public void operateAfter(JoinPoint joinPoint, Object result) {
+        try {
+            Signature signature = joinPoint.getSignature();
+            MethodSignature methodSignature = (MethodSignature) signature;
+            Method method = methodSignature.getMethod();
+            if (method.isAnnotationPresent(OperateLogAnnotation.class)) {
+                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                HttpServletRequest request = attributes.getRequest();
+                OperateLogAnnotation operate = method.getAnnotation(OperateLogAnnotation.class);
+                OperateLogReqDTO operateLogReqDTO = new OperateLogReqDTO();
+                operateLogReqDTO.setMenuBtn(operate.menuBtn());
+                operateLogReqDTO.setMenuName(operate.menuName());
+                Object[] args = joinPoint.getArgs();
+                StringBuilder sb = new StringBuilder();
+                for (Object obj : args) {
+                    sb.append(JSON.toJSONString(obj));
+                }
+                operateLogReqDTO.setParam(sb.toString());
+                operateLogReqDTO.setClassName(signature.getDeclaringTypeName());
+                operateLogReqDTO.setReqMethod(request.getMethod());
+                LogParam logParam = JSON.parseObject(OperateLogContext.get(), LogParam.class);
+                if (StringUtils.isNotBlank(operate.remark())) {
+                    operateLogReqDTO.setRemark(operate.remark().length() > 128 ? operate.remark().substring(0, 128) : operate.remark());
+                } else {
+                    String remark = logParam == null ? null : logParam.getRemark();
+                    operateLogReqDTO.setRemark(StringUtils.isNotBlank(remark) && remark.length() > 128 ? remark.substring(0, 128) : remark);
+                }
+                if (StringUtils.isNotBlank(operate.opContent())) {
+                    operateLogReqDTO.setOpContent(operate.opContent());
+                } else {
+                    operateLogReqDTO.setOpContent(logParam == null ? null : logParam.getOpContent());
+                }
+                // 设置操作人（重要）
+                String user = StringUtils.isBlank(request.getHeader("empName")) ? UserContext.getCurrentUserName() : request.getHeader("empName");
+                operateLogReqDTO.setOpAccount(user);
+                operateLogReqDTO.setOpTime(new Date());
+                operateLogReqDTO.setIp(request.getHeader("ip"));
+                if (result instanceof Result) {
+                    operateLogReqDTO.setSuccess(((Result) result).isSuccess() ? 'Y' : 'N');
+                }
+                operateLogReqDTO.setResult(JSON.toJSONString(result));
+                operateLogReqDTO.setUrl(request.getRequestURI());
+                operateLogReqDTO.setMethodName(method.getName());
+
+                EventBusFactory.build().registerAsyncEvent(OperateLogListener.class);
+                OperateLogEvent operateLogEvent = new OperateLogEvent();
+                operateLogEvent.setOperateLogReqDTO(operateLogReqDTO);
+                operateLogEvent.setCempUrl(cempUrl);
+                OperateLogContext.remove();
+                EventBusFactory.build().postAsyncEvent(operateLogEvent);
+            }
+        } catch (Throwable e) {
+            log.error("operate log aspect err Msg :{}", e.getMessage(), e);
+        }
+    }
+}

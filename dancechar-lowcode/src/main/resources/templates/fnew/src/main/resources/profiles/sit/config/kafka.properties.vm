@@ -1,0 +1,20 @@
+requestTimeoutMs=10000
+
+#kafka生产者demo
+demoPoolSize=1
+#foreach ($middleare in $middleareList)
+#if ($middleare == 'KAFKA' && ${fcodeKafkaBaseInfoList})
+demoCheckCode=$fcodeKafkaBaseInfoList.get(0).getCheckCode()
+demoMonitorUrl=$fcodeKafkaBaseInfoList.get(0).getMonitorUrl()
+demoClusterName=$fcodeKafkaBaseInfoList.get(0).getClusterName()
+demoTopic=$fcodeKafkaBaseInfoList.get(0).getTopicName()
+demoProduceAutoStartup=false
+#end
+#end
+#if ($middleare == 'KAFKA' && !${fcodeKafkaBaseInfoList})
+demoCheckCode1=98XQddHd
+demoMonitorUrl1=http://tkafka-AaKk6T1d-ESG-CEMP-CORE.kafkasit.sfcloud.local:1080/mom-mon/monitor/requestService.pub
+demoClusterName1=esg_cemp_core_jlv1i8po01
+demoTopic1=LOG_REQUEST_COLLECT
+demoProduceAutoStartup1=false
+#end

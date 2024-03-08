@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.system.biz.user.dao.inf.SystemUserDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.system.biz.user.dto.SystemUserReqDTO"
+            resultType="com.litian.dancechar.system.biz.user.dto.SystemUserRespDTO">
+        SELECT
+        c.*
+        FROM
+        sys_user_info c
+        WHERE
+        c.delete_flag = 0
+        <if test="accountNo != null and accountNo != ''">
+            and c.account_no = #{accountNo}
+        </if>
+        <if test="realName != null and realName != ''">
+            and c.real_name like concat('%',#{realName},'%')
+        </if>
+    </select>
+</mapper>

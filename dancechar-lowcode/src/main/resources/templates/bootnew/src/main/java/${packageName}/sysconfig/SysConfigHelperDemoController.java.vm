@@ -1,0 +1,29 @@
+package ${packageName}.sysconfig;
+
+
+import com.sf.cemp.framework.baseservice.client.sysconfig.util.SysConfigHelper;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.framework.domain.Result;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
+
+/**
+ * 类描述: 公共配置demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@RestController
+public class SysConfigHelperDemoController {
+
+    @Resource
+    private SysConfigHelper sysConfigHelper;
+
+    @GetMapping(value = "/getByKey")
+    public Result<String> getByKey() {
+        // 这里通过配置的key，即可获取公共配置服务对应key的值，假如想获取其他业务模块的配置值,调用方式：sysConfigHelper.getByKey("conf-activity-redis",personInfoDTO.getProKey())
+        String configValue = sysConfigHelper.getByKey("cemp.url");
+        return SFResultUtil.success(configValue);
+    }
+}

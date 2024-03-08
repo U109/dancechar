@@ -1,0 +1,129 @@
+package ${packageName}.${functionDir}.manager;
+
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.dtoName}DTO;
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.queryReqDTOName}QueryReqDTO;
+import ${packageName}.${functionDir}.repository.dataobject.${genFileRenameDTO.doName}DO;
+import ${packageName}.${functionDir}.repository.mapper.${genFileRenameDTO.mapperName}Mapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.sf.cemp.framework.common.plus.page.PageResp;
+import com.sf.cemp.framework.common.plus.page.PageRespUtil;
+import com.sf.cemp.framework.common.util.bean.SfBeanUtil;
+import com.sf.cemp.framework.common.util.object.SfObjectUtil;
+import com.sf.cemp.framework.common.util.string.SfStrUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import java.util.List;
+
+/**
+ * 类描述：${genFunctions}manager
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class ${className}Manager extends ServiceImpl<${genFileRenameDTO.mapperName}Mapper, ${genFileRenameDTO.doName}DO> {
+
+    /**
+     * 功能：分页查询列表记录
+     */
+    public PageResp<${genFileRenameDTO.dtoName}DTO> listPage(${genFileRenameDTO.queryReqDTOName}QueryReqDTO ${instanceName}QueryReqDTO) {
+        PageHelper.startPage(${instanceName}QueryReqDTO.getPageNo(), ${instanceName}QueryReqDTO.getPageSize());
+        LambdaQueryWrapper<${genFileRenameDTO.doName}DO> queryWrapper = Wrappers.lambdaQuery();
+#foreach ($column in $tableField)
+#if (${column.queryCondition} == 1 && ${column.queryConditionLike} == 0)
+#if (${column.javaType} == 'String')
+        queryWrapper.eq(SfStrUtil.isNotEmpty(${instanceName}QueryReqDTO.get${column.columnKeyName}()),${genFileRenameDTO.doName}DO::get${column.columnKeyName}, ${instanceName}QueryReqDTO.get${column.columnKeyName}());
+#else
+        queryWrapper.eq(SfObjectUtil.isNotEmpty(${instanceName}QueryReqDTO.get${column.columnKeyName}()),${genFileRenameDTO.doName}DO::get${column.columnKeyName}, ${instanceName}QueryReqDTO.get${column.columnKeyName}());
+#end
+#end
+#if (${column.queryCondition} == 1 && ${column.queryConditionLike} == 1)
+#if (${column.javaType} == 'String')
+        queryWrapper.likeRight(SfStrUtil.isNotEmpty(${instanceName}QueryReqDTO.get${column.columnKeyName}()),${genFileRenameDTO.doName}DO::get${column.columnKeyName}, ${instanceName}QueryReqDTO.get${column.columnKeyName}());
+#else
+        queryWrapper.likeRight(SfObjectUtil.isNotEmpty(${instanceName}QueryReqDTO.get${column.columnKeyName}()),${genFileRenameDTO.doName}DO::get${column.columnKeyName}, ${instanceName}QueryReqDTO.get${column.columnKeyName}());
+#end
+#end
+#end
+        List<${genFileRenameDTO.doName}DO> list = getBaseMapper().selectList(queryWrapper);
+        PageResp<${genFileRenameDTO.dtoName}DTO> pageResp = PageRespUtil.buildPageResult(list, ${genFileRenameDTO.dtoName}DTO.class);
+        return pageResp;
+    }
+
+    /**
+     * 功能：新增保存记录
+     */
+    public Boolean save(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        ${genFileRenameDTO.doName}DO ${instanceName}DO = new ${genFileRenameDTO.doName}DO();
+        SfBeanUtil.copyNotNull(${instanceName}DTO, ${instanceName}DO);
+        return save(${instanceName}DO);
+    }
+
+#if(${primaryKeyInfos.size()}>1)
+    /**
+     * 功能：根据多主键修改记录
+     */
+    public Boolean updateByMultiId(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO){
+        ${genFileRenameDTO.doName}DO ${instanceName}DO = new ${genFileRenameDTO.doName}DO();
+        SfBeanUtil.copyNotNull(${instanceName}DTO,${instanceName}DO);
+        return baseMapper.updateByMultiId(${instanceName}DO)>0;
+    }
+
+    /**
+     * 功能：根据多主键删除记录
+     */
+    public Boolean deleteByMultiId(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO){
+        ${genFileRenameDTO.doName}DO ${instanceName}DO = new ${genFileRenameDTO.doName}DO();
+        SfBeanUtil.copyNotNull(${instanceName}DTO,${instanceName}DO);
+        return baseMapper.deleteByMultiId(${instanceName}DO)>0;
+    }
+
+    /**
+    * 功能：根据多主键获取记录
+    */
+    public ${genFileRenameDTO.dtoName}DTO selectByMultiId(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        ${genFileRenameDTO.doName}DO ${instanceName}DO = new ${genFileRenameDTO.doName}DO();
+        SfBeanUtil.copyNotNull(${instanceName}DTO,${instanceName}DO);
+        ${genFileRenameDTO.doName}DTO respDTO = new ${genFileRenameDTO.doName}DTO();
+        return SfBeanUtil.copyNotNull(baseMapper.selectByMultiId(${instanceName}DO),respDTO);
+    }
+
+#else
+    /**
+     * 功能：修改记录
+     */
+    public Boolean update(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        if (SfObjectUtil.isNotNull(${instanceName}DTO.getId())) {
+            ${genFileRenameDTO.doName}DO ${instanceName}DO = this.baseMapper.selectById(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()());
+            if (SfObjectUtil.isNotNull(${instanceName}DO)) {
+                SfBeanUtil.copyNotNull(${instanceName}DTO, ${instanceName}DO);
+                return this.baseMapper.updateById(${instanceName}DO) > 0;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 功能：根据id删除记录
+     */
+    public Boolean deleteById(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        ${genFileRenameDTO.doName}DO ${instanceName}DO = this.baseMapper.selectById(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()());
+        if (SfObjectUtil.isNotNull(${instanceName}DO)) {
+            return super.removeById(${instanceName}DO.get$tableField.get(0).getColumnKeyName()());
+        }
+        return false;
+    }
+
+    /**
+     * 功能：根据id获取记录
+     */
+    public ${genFileRenameDTO.dtoName}DTO getWrapperById(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        return SfBeanUtil.copyNotNull(this.baseMapper.selectById(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()()), new ${genFileRenameDTO.dtoName}DTO());
+    }
+
+#end
+}

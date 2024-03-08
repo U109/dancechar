@@ -1,0 +1,165 @@
+spring.application.name=${sysCode}
+server.port=8080
+server.servlet.context-path=/${contextPath}
+
+cemp.app.contextPath=,
+
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+
+
+#log4j2 \u914D\u7F6E
+logging.config=classpath:log4j2.xml
+
+#foreach ($middleare in $middleareList)
+#if ($middleare == 'SATURN')
+saturnjob.consoleUri=http://api-itao-ujp-core.intsit.sfcloud.local
+#saturnjob.home=D:/workspace-sf/esg-cemp-core-base/target/saturn-executor-3.5.3.SF.RELEASE
+#saturnjob.home=/app/deploy/saturn-executor
+saturnjob.home=
+saturnjob.appNameSpace=${sysCode}
+saturnjob.multiMode=false
+saturnjob.saturnStdout=false
+#end
+
+#if ($middleare == 'SENTINEL' && !${fcodeSentinelBaseInfoDTO})
+sentinel.zk.address=10.206.128.38:2181,10.206.128.39:2181,10.206.128.40:2181
+spring.cloud.sentinel.transport.dashboard=cemp-sentinel.sit.sf-express.com
+#spring.cloud.sentinel.transport.port=8719
+spring.cloud.sentinel.filter.enabled=true
+#end
+#if ($middleare == 'SENTINEL' && ${fcodeSentinelBaseInfoDTO})
+sentinel.zk.address=${fcodeSentinelBaseInfoDTO.zkUrl}
+spring.cloud.sentinel.transport.dashboard=${fcodeSentinelBaseInfoDTO.consoleUrl}
+#spring.cloud.sentinel.transport.port=8719
+spring.cloud.sentinel.filter.enabled=true
+#end
+#if($middleare == 'MONGODB' && ${fcodeMongodbBaseInfoDTO})
+#mongodb的host地址 mongodb://用户名:地址@url:端口(多个用逗号分隔)
+spring.data.mongodb.uri=${fcodeMongodbBaseInfoDTO.mongodbUrl}
+#end
+#if($middleare == 'ELASTICSEARCH' && ${esBaseInfoDTO} && ${esBaseInfoDTO.esVersion}=='es5.x')
+#es集群名
+clusterName=${esBaseInfoDTO.clusterName}
+#es集群IP和接口
+cemp.ES.hostAndPort=${esBaseInfoDTO.esAddr}
+#end
+#if($middleare == 'ELASTICSEARCH' && ${esBaseInfoDTO} && ${esBaseInfoDTO.esVersion} == 'es7.x')
+#配置es7.6.0
+elasticsearch.host=${esBaseInfoDTO.esAddr}
+elasticsearch.connectNum=10
+elasticsearch.connectPerRoute=50
+elasticsearch.userName=${esBaseInfoDTO.esUserName}
+elasticsearch.password=${esBaseInfoDTO.esUserPwd}
+#end
+
+#end
+
+cemp.url=http://public-int-gw.intsit.sfdc.com.cn:1080
+
+sqlLogShowSwitch=true
+
+
+# MyBatis-Plus\u914D\u7F6E
+mybatis.config-locations=classpath:mybatis/mybatis-config.xml
+mybatis-plus.mapper-locations=classpath:/mapper/**/*.xml
+#mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
+mybatis-plus.global-config.db-config.id-type=auto
+
+
+#if ($redisComponentDTO)
+#if ($redisComponentDTO.deployType == 'cluster')
+#redis\u914D\u7F6E
+cps.redis.cluster.name=${redisComponentDTO.clusterName}
+#foreach ($redisNode in $redisComponentDTO.redisNodeList)
+cps.redis.cluster.node${redisNode.id}Host=${redisNode.host}
+cps.redis.cluster.node${redisNode.id}Port=${redisNode.port}
+#end
+cps.redis.cluster.password=${redisComponentDTO.password}
+cps.redis.cluster.timeout=${redisComponentDTO.timeout}
+#end
+#if ($redisComponentDTO.deployType == 'sentinel')
+#redis-sentinel
+#redis.dynamic.primary=user
+#foreach ($sentinelMaster in $redisComponentDTO.sentinelMasterList)
+redis.dynamic.redis.user.master[${foreach.index}]=${sentinelMaster}
+#end
+#foreach ($redisNode in $redisComponentDTO.redisNodeList)
+redis.dynamic.redis.user.sentinel[${foreach.index}]=${redisNode.host}:${redisNode.port}
+#end
+redis.dynamic.redis.user.redisPassword=${redisComponentDTO.password}
+redis.dynamic.redis.user.masterTimeout=${redisComponentDTO.timeout}
+redis.share.switch=N
+#end
+#end
+
+
+
+# \u4E3A\u4E86\u67D0\u4E9B\u7248\u672C\u7684springboot  @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class}) \u65E0\u6CD5\u751F\u6548
+spring.autoconfigure.exclude=com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure,org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+#\u8BBE\u7F6E\u9ED8\u8BA4\u7684\u6570\u636E\u6E90\u6216\u8005\u6570\u636E\u6E90\u7EC4,\u9ED8\u8BA4\u503C\u5373\u4E3Amaster\uFF0C\u5982\u679C\u8BFB\u8005\u53EA\u662F\u5355\u6570\u636E\u6E90\u53EA\u9700\u8981\u6CE8\u91CA\u6389slave\u76F8\u5173\u914D\u7F6E\u5373\u53EF\uFF0C\u8FD9\u91CC\u4E3A\u4E86\u65B9\u4FBF\u6F14\u793Amaster\u4E0Eslave\u4FDD\u6301\u76F8\u540C
+
+#foreach ($dbInfo in $dbInfoList)
+#if (${dbInfo.primary})
+spring.datasource.dynamic.primary=${dbInfo.dbTag}
+#end
+#if(${dbInfo.driverName}=='oracle')
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.url=${dbInfo.dbUrl}
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.driverClassName=oracle.jdbc.driver.OracleDriver
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.username=${dbInfo.encUsername}
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.password=${dbInfo.encPassword}
+
+
+spring.datasource.dynamic.druid.validation-query=SELECT 'x' FROM DUAL
+spring.datasource.dynamic.druid.filters=config
+#else
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.url=${dbInfo.dbUrl}?useUnicode=true&amp;characterEncoding=utf8&allowMultiQueries=true&rewriteBatchedStatements=true&useSSL=false
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.driverClassName=com.mysql.jdbc.Driver
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.username=${dbInfo.encUsername}
+spring.datasource.dynamic.datasource.${dbInfo.dbTag}.password=${dbInfo.encPassword}
+
+
+spring.datasource.dynamic.druid.validation-query=SELECT 'x'
+#end
+#end
+spring.datasource.dynamic.druid.initial-size=1
+spring.datasource.dynamic.druid.max-active=100
+spring.datasource.dynamic.druid.min-idle=1
+spring.datasource.dynamic.druid.max-wait=60000
+spring.datasource.dynamic.druid.time-between-eviction-runs-millis=25000
+spring.datasource.dynamic.druid.min-evictable-idle-time-millis=300000
+spring.datasource.dynamic.druid.test-while-idle=true
+spring.datasource.dynamic.druid.test-on-borrow=false
+spring.datasource.dynamic.druid.test-on-return=false
+spring.datasource.dynamic.druid.wall.multi-statement-allow=true
+spring.datasource.dynamic.druid.init-connection-sqls=set names utf8mb4;
+spring.datasource.dynamic.druid.keep-alive=true
+
+#\u52A0\u5BC6\u6570\u636E
+jasypt.encryptor.password=PWDSalt
+
+
+
+caffeine.cacheNames=conf-base-redis,activity-redis,conf-act-lengthy-redis,conf-activity-redis,conf-activityWeb-redis,conf-coupon-redis,conf-game-redis,conf-goods-redis,conf-integral-redis,conf-manage-redis,conf-nonactivity-redis,conf-push-redis,conf-svip-redis,manage-redis,sstActivity,sst_coupn_redis,conf-discount-redis,manage_redis,sstActivity,sst_coupon_redis,activity-redis,integral-redis,common-redis
+caffeine.initCapacity=100
+caffeine.maxSize=1000
+caffeine.expireAfterAccess=600
+caffeine.refreshAfterWrite=600
+
+
+sfdencrypt.cfg={[LOGGER];logsw=debug,error,info;logPath=/tmp;[HOST 1];hsmModel=VSM1310;linkNum=20;host=10.202.77.236;port=1080;ifHeart=NO;connTimeout=5;readTimeout=5;msgHead=RVNHLUNQTS1DT1JFIL/Nu6e+q9e806rP+s+1zbMAAAAAQUQ1Q0RCQzExRThDRjY2OAAAAAAAAAAA6iBtAAAAAFJDQ05HSzNTNFMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=.ztnUPtyjVmsSTixiaWhYyJrFy/KXQVI2m0/+mZjQY9E=;[HOST 2];hsmModel=VSM1310;linkNum=20;host=10.202.77.238;port=1080;ifHeart=NO;connTimeout=5;readTimeout=5;msgHead=RVNHLUNQTS1DT1JFIL/Nu6e+q9e806rP+s+1zbMAAAAAQUQ1Q0RCQzExRThDRjY2OAAAAAAAAAAA6iBtAAAAAFJDQ05HSzNTNFMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=.ztnUPtyjVmsSTixiaWhYyJrFy/KXQVI2m0/+mZjQY9E=;[URGENT];host=des-escape.intsit.sfdc.com.cn;port=1080;connTimeout=5;readTimeout=5;}
+sfdencrypt.keyindex=21
+sfdencrypt.byteKeyIndex=32
+
+
+#if(${functionCollect.indexOf("sysConfig")} != -1)
+#是否加载公共配置服务,因为大部分模块都有公共配置，默认为true, true:是  false: 否
+common.properties.enable=true
+#当前业务模块公共配置服务使用的系统code，每个业务模块可能不一样,如果当前模块使用了多个系统code，使用#分隔
+sys.config.code=conf-push-redis
+#end
+
+#if(${functionCollect.indexOf("idGen")} != -1)
+#是否启动Id生成，默认为false, true:启动 false:不启动
+id.gen.enable=true
+#end
+

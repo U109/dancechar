@@ -1,0 +1,27 @@
+package ${packageName}.${functionDir}.repository.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import ${packageName}.${functionDir}.dto.${className}DTO;
+import ${packageName}.${functionDir}.dto.${className}QueryReqDTO;
+import ${packageName}.${functionDir}.repository.dataobject.${className}DO;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+#if (!${primary})
+import com.baomidou.dynamic.datasource.annotation.DS;
+#end
+
+
+/**
+ * 类描述：${className}mapper
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+#if (!${primary})
+@DS("${dbTag}")
+#end
+@Mapper
+public interface ${className}Mapper extends BaseMapper<${className}DO> {
+
+    List<${className}DTO> findList(${className}QueryReqDTO ${instanceName}QueryReqDTO);
+}

@@ -1,0 +1,18 @@
+package ${packageName}.framework.operatelog;
+
+
+import lombok.Data;
+
+/**
+ * 类描述：操作日志事件类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class OperateLogEvent extends BaseEvent {
+
+    private OperateLogReqDTO operateLogReqDTO;
+
+    private String cempUrl;
+}

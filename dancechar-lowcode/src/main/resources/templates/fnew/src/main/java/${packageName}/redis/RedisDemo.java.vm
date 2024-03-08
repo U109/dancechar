@@ -1,0 +1,52 @@
+package ${packageName}.redis;
+
+#if ($redisComponentDTO.deployType == 'cluster')
+import com.sf.cemp.core.framework.redis.util.SfRedisUtil;
+#end
+#if ($redisComponentDTO.deployType == 'sentinel')
+import com.sf.cemp.core.framework.redis.old.cache.DefaultRedisCache;
+#end
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+/**
+ * 类描述：Redis使用Demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Component
+public class RedisDemo {
+
+#if ($redisComponentDTO.deployType == 'cluster')
+    @Resource
+    private SfRedisUtil sfRedisUtil;
+
+    /**
+     * 功能描述: redis设置值
+     */
+    public void set(String key,String value){
+        sfRedisUtil.set(key,value);
+    }
+
+    /**
+     * 功能描述: redis获取值
+     */
+    public String get(String key){
+        return sfRedisUtil.get(key);
+    }
+#end
+
+#if ($redisComponentDTO.deployType == 'sentinel')
+    public void addKey(String key,String value){
+        DefaultRedisCache.add(key,value);
+    }
+
+    public String getKey(String key){
+        return DefaultRedisCache.get(key);
+    }
+#end
+}

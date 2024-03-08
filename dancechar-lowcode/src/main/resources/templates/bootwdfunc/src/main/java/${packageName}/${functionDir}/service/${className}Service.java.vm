@@ -1,0 +1,29 @@
+package ${packageName}.${functionDir}.service;
+
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.dtoName}DTO;
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.queryReqDTOName}QueryReqDTO;
+import ${packageName}.${functionDir}.manager.${genFileRenameDTO.managerName}Manager;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.framework.domain.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 类描述：${genFunctions}服务实现
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class ${className}Service {
+    @Resource
+    private ${genFileRenameDTO.managerName}Manager ${instanceName}Manager;
+
+    public Result<List<${genFileRenameDTO.dtoName}DTO>> findList(${genFileRenameDTO.queryReqDTOName}QueryReqDTO req) {
+        return SFResultUtil.success(${instanceName}Manager.findList(req));
+    }
+}

@@ -1,0 +1,344 @@
+package ${packageName}.framework.log;
+
+import com.alibaba.dubbo.rpc.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.sf.cemp.framework.common.plus.context.SpringContextUtil;
+import com.sf.cemp.framework.common.util.string.SfStrUtil;
+import com.sf.esg.sasp.authority.core.demo.request.SaspOperateLogReq;
+import com.sf.esg.sasp.authority.core.domain.CommonConstans;
+import com.sf.esg.sasp.authority.core.domain.Utils;
+import com.sf.esg.sasp.authority.core.service.SaspUserAppLogService;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * 类描述: 日志过滤器
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class LogFilter implements Filter {
+
+    private static final String UNKNOWN = "unknown";
+    /**
+     * 过滤器
+     */
+    public static final String FILTER = "filter";
+    private static final Logger logger = LoggerFactory.getLogger(FILTER);
+
+    /**
+     * 初始系统中哪些方法不需要添加日志操作记录
+     */
+    private static final List<String> LOG_METHODS = Arrays.asList("nul");
+    public static final String EMP_NUM = "empNum";
+    public static final String EMP_NAME = "empName";
+    public static final String EMP_AREA_CODE = "empAreaCode";
+    public static final String EMP_DISTRICT_FLAG = "empDistrictFlag";
+    public static final String EMP_NET_CODE = "empNetCode";
+
+    /**
+     * 配置系统中哪些方法不打印入参
+     */
+    public static List<String> IGNORE_IN_PARAM_METHODS = null;
+    /**
+     * 配置系统中哪些方法不打印出参
+     */
+    public static List<String> IGNORE_OUT_PARAM_METHODS = null;
+
+    @Override
+    public Result invoke(Invoker<?> invoker, Invocation invocation) {
+        long begin = System.currentTimeMillis();
+        String logUsername = "";
+        HttpServletRequest request = (HttpServletRequest) RpcContext.getContext().getRequest();
+        String path = request.getRequestURI();
+        String methodName = RpcContext.getContext().getMethodName();
+        if (checkRecordFlag(path)) {
+            saveLog(logUsername, path, invocation, checkOperType(methodName));
+        }
+
+        setLoggerMDC(request);
+        setCurrentUser(request);
+        // 记录进出参数信息
+        Result res = invoker.invoke(invocation);
+        // 初始化系统中哪些方法不打印入参出参
+        initIgnoreMethod();
+
+        loggerFilter(invocation, begin, request, res, path);
+        return res;
+    }
+
+    private static void initIgnoreMethod() {
+        if (IGNORE_IN_PARAM_METHODS != null || IGNORE_OUT_PARAM_METHODS != null) {
+            return;
+        }
+        try {
+            LogIgnoreConfig ignoreConfig = SpringContextUtil.getBean(LogIgnoreConfig.class);
+            IGNORE_IN_PARAM_METHODS = Arrays.asList(ignoreConfig.getIgnoreInParamMethods().split(";"));
+            IGNORE_OUT_PARAM_METHODS = Arrays.asList(ignoreConfig.getIgnoreOutParamMethods().split(";"));
+        } catch (Exception e) {
+            logger.error("配置系统中哪些方法不打印入参出参抛出异常", e);
+        }
+    }
+
+    /**
+     * 判断是否需要记录日志
+     *
+     * @param method 方法名
+     * @return boolean
+     */
+    private static boolean checkRecordFlag(String method) {
+        return LOG_METHODS.contains(method);
+    }
+
+    /**
+     * 调用服务添加记录操作日志
+     *
+     * @param logUsername 用户名
+     * @param path        接口名
+     * @param invocation  invocation
+     */
+    private void saveLog(String logUsername, String path, Invocation invocation, int operType) {
+        try {
+            Object[] objs = invocation.getArguments();
+            JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(objs[0]));
+            json.remove("logUsername");
+            SaspOperateLogReq saspLog = new SaspOperateLogReq();
+            saspLog.setBeginTm(new Date());
+            saspLog.setOpUser(logUsername);
+            saspLog.setOpInterface(path);
+            saspLog.setOpType(operType);
+            saspLog.setOpRecord(JSON.toJSONString(json));
+
+            SaspUserAppLogService logService = SpringContextUtil.getBean(SaspUserAppLogService.class);
+
+            logService.appOperateLogRPC(saspLog);
+        } catch (Exception e) {
+            logger.error("记录操作日志异常,错误信息： {}", Utils.getStackStr(e));
+        }
+    }
+
+    private int checkOperType(String method) {
+        if (StringUtils.isBlank(method)) {
+            return CommonConstans.SYSTEM_LOG_OP_TYPE_OTHER;
+        } else if (method.toLowerCase().contains("add")) {
+            return CommonConstans.SYSTEM_LOG_OP_TYPE_ADD;
+        } else if (method.toLowerCase().contains("edit")) {
+            return CommonConstans.SYSTEM_LOG_OP_TYPE_EDIT;
+        } else if (method.toLowerCase().contains("delete")) {
+            return CommonConstans.SYSTEM_LOG_OP_TYPE_DEL;
+        } else {
+            return CommonConstans.SYSTEM_LOG_OP_TYPE_OTHER;
+        }
+    }
+
+    /**
+     * 进出参数输出
+     *
+     * @param invocation invocation
+     * @param begin      void
+     */
+    private static void loggerFilter(Invocation invocation, long begin, HttpServletRequest request, Result res, String reqPath) {
+        String methodName = invocation.getMethodName();
+        String path = RpcContext.getContext().getUrl().getPath();
+        char split = '/';
+        if (SfStrUtil.contains(path, split)) {
+            path = path.substring(path.lastIndexOf(split) + 1);
+        }
+#set($tmpValue3="##")
+        StringBuilder builder = new StringBuilder();
+        builder.append("IP=[").append(getIpAddr(request))
+                .append(",访问类|方法: [")
+                .append(path).append("|").append(methodName).append("]")
+                .append(",耗时：${tmpValue3}")
+                .append(System.currentTimeMillis() - begin)
+                .append("ms${tmpValue3}");
+        boolean printFlag = false;
+        if (IGNORE_IN_PARAM_METHODS != null) {
+            if (IGNORE_IN_PARAM_METHODS.contains(methodName)) {
+                printFlag = true;
+            } else {
+                for (String ex : IGNORE_IN_PARAM_METHODS) {
+                    if (reqPath.contains(ex)) {
+                        printFlag = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!printFlag) {
+            builder.append("，入参[").append(getInParamInfo(invocation.getArguments())).append("]");
+        } else {
+            builder.append("，入参不打印[").append(methodName).append("]");
+        }
+        builder.append(getOutParamInfo(res, reqPath, methodName)).append("]");
+        String builderR = builder.toString();
+        String failMsg = "处理结果: [程序异常";
+        if (builderR.contains(failMsg)) {
+            logger.error(builderR);
+        } else {
+            logger.info(builderR);
+        }
+    }
+
+    private static String getIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("x-forwarded-for");
+            if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
+                ip = request.getHeader("Proxy-Client-IP");
+                if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
+                    ip = request.getHeader("WL-Proxy-Client-IP");
+                    if (ip == null || ip.length() == 0 || UNKNOWN.equalsIgnoreCase(ip)) {
+                        ip = request.getRemoteAddr();
+                    }
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(ip)) {
+            return ip.split(",")[0];
+        }
+        return ip;
+    }
+
+    /**
+     * 获取入参
+     */
+    public static String getInParamInfo(Object[] objs) {
+        for (Object obj : objs) {
+            if (null == obj) {
+                continue;
+            }
+            return JSON.toJSONString(obj);
+        }
+        return "";
+    }
+
+    /**
+     * 获取出参
+     */
+    public static String getOutParamInfo(Result r, String reqPath, String methodName) {
+        StringBuilder sb = new StringBuilder();
+        if (r.getException() != null) {
+            sb.append(", 处理结果: [");
+            sb.append("程序异常,原因: ").append(r.getException().getMessage()).append("]");
+            return sb.toString();
+        }
+        try {
+            Object obj = r.getValue();
+            if (obj instanceof com.sf.framework.domain.Result) {
+                sb.append(", 处理结果: [");
+                @SuppressWarnings("rawtypes")
+                com.sf.framework.domain.Result result = (com.sf.framework.domain.Result) obj;
+                if (result.isSuccess()) {
+                    sb.append("成功]");
+                } else {
+                    sb.append("失败,原因: errorCode:").append(result.getErrorCode()).append(",errMsg:").append(result.getErrorMessage()).append("]");
+                }
+                boolean printFlag = false;
+                if (IGNORE_OUT_PARAM_METHODS != null) {
+                    if (IGNORE_OUT_PARAM_METHODS.contains(methodName)) {
+                        printFlag = true;
+                    } else {
+                        for (String ex : IGNORE_OUT_PARAM_METHODS) {
+                            if (reqPath.contains(ex)) {
+                                printFlag = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!printFlag) {
+                    sb.append(", 出参：[").append(JSON.toJSONString(result.getObj())).append("]");
+                } else {
+                    sb.append("，出参不打印[").append(methodName).append("]");
+                }
+            } else {
+                boolean printFlag = false;
+                if (IGNORE_OUT_PARAM_METHODS != null) {
+                    if (IGNORE_OUT_PARAM_METHODS.contains(methodName)) {
+                        printFlag = true;
+                    } else {
+                        for (String ex : IGNORE_OUT_PARAM_METHODS) {
+                            if (reqPath.contains(ex)) {
+                                printFlag = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!printFlag) {
+                    sb.append(", 出参：[").append(JSON.toJSONString(obj)).append("]");
+                } else {
+                    sb.append("，出参不打印[").append(methodName).append("]");
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 设置日志 traceId
+     *
+     * @param req HttpServletRequest
+     */
+    private void setLoggerMDC(HttpServletRequest req) {
+        try {
+            String traceId = req.getHeader("traceId");
+            if (StringUtils.isBlank(traceId)) {
+                traceId = UUID.randomUUID().toString().replace("-", "");
+            }
+            MDC.put("traceId", traceId);
+        } catch (Exception e) {
+            logger.error("setLoggerMDC err", e);
+        }
+    }
+
+    /**
+     * 设置当前操作人员
+     *
+     * @param req HttpServletRequest
+     */
+    private void setCurrentUser(HttpServletRequest req) {
+        try {
+            String empNum = req.getHeader(EMP_NUM);
+            if (SfStrUtil.isNotBlank(empNum)) {
+                MDC.put(EMP_NUM, empNum);
+                MDC.put(EMP_NAME, getEmpName(req));
+                MDC.put(EMP_AREA_CODE, req.getHeader(EMP_AREA_CODE));
+                MDC.put(EMP_DISTRICT_FLAG, req.getHeader(EMP_DISTRICT_FLAG));
+                MDC.put(EMP_NET_CODE, req.getHeader(EMP_NET_CODE));
+            }
+        } catch (Exception e) {
+            logger.error("setCurrentUser err", e);
+        }
+    }
+
+    /**
+     * 员工姓名是中文，header需要转码
+     */
+    private String getEmpName(HttpServletRequest req) {
+        String empName = null;
+        try {
+            empName = req.getHeader(EMP_NAME);
+            if (SfStrUtil.isNotBlank(empName)) {
+                empName = URLDecoder.decode(empName, "utf-8");
+            }
+            return empName;
+        } catch (Exception e) {
+            logger.error("URLDecoder.decode err,empName:{}", empName, e);
+        }
+        return empName;
+    }
+}

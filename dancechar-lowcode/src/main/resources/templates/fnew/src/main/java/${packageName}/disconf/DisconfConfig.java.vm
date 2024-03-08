@@ -1,0 +1,78 @@
+package ${packageName}.disconf;
+
+import com.baidu.disconf.client.DisconfMgrBean;
+import com.baidu.disconf.client.DisconfMgrBeanSecond;
+import com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean;
+import com.sf.cemp.core.framework.disconf.util.PropertiesUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+/**
+ * 类描述:
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+public class DisconfConfig {
+
+    @Resource
+    private PropertiesUtils propertiesUtils;
+
+
+    @Bean(destroyMethod = "destroy")
+    public DisconfMgrBean getDisconfMgrBean() {
+        //获取当前环境，若是灰度则设置disconf连接par灰度环境
+        if("grey".equals(System.getenv("ENV_TAG"))){
+            System.setProperty("disconf.env", "par");
+        }
+        DisconfMgrBean disconfMgrBean = new DisconfMgrBean();
+        //你的需要被扫描的包
+        disconfMgrBean.setScanPackage("${packageName}");
+        return disconfMgrBean;
+    }
+
+    @Bean(destroyMethod = "destroy", initMethod = "init")
+    public DisconfMgrBeanSecond getDisconfMgrBean2() {
+        return new DisconfMgrBeanSecond();
+    }
+
+    @Bean(name = "reloadablePropertiesFactoryBean")
+    public ReloadablePropertiesFactoryBean reloadablePropertiesFactoryBean() {
+        ReloadablePropertiesFactoryBean propertiesFactoryBean = new ReloadablePropertiesFactoryBean();
+        propertiesFactoryBean.setSingleton(true);
+
+        // disconf配置的文件
+        List<String> fileNames = new ArrayList<>();
+        //disconfBean.getInitPaths().split(",");
+        fileNames.add("system.properties");
+        fileNames.add("application.properties");
+        //fileNames.add("classpath:sys-config.yml");
+        propertiesFactoryBean.setLocations(fileNames);
+        return propertiesFactoryBean;
+    }
+
+    @Bean(name = "propertyPlaceholderConfigurer")
+    public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer(
+            ReloadablePropertiesFactoryBean reloadablePropertiesFactoryBean) {
+        PropertyPlaceholderConfigurer placeholderConfigurer = new PropertyPlaceholderConfigurer();
+        placeholderConfigurer.setIgnoreResourceNotFound(true);
+        placeholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+        try {
+            Properties properties = reloadablePropertiesFactoryBean.getObject();
+            placeholderConfigurer.setProperties(properties);
+        } catch (IOException e) {
+            throw new RuntimeException("unable to find properties", e);
+        }
+        return placeholderConfigurer;
+    }
+
+}

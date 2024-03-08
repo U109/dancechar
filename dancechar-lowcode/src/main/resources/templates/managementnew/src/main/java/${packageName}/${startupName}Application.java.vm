@@ -1,0 +1,27 @@
+package ${packageName};
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.PropertySource;
+import lombok.extern.slf4j.Slf4j;
+
+
+/**
+ * 类描述: 启动类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@SpringBootApplication(scanBasePackages = {"com.sf.cemp"})
+@PropertySource(value={
+        "classpath:application.properties",
+        "classpath:sys.properties"}, ignoreResourceNotFound = true
+)
+@Slf4j
+public class ${startupName}Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(${startupName}Application.class, args);
+        log.info("${startupName}Application-启动成功!!!!!");
+    }
+}

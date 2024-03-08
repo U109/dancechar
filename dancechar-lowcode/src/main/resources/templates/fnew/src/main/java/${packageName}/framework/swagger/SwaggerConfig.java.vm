@@ -1,0 +1,33 @@
+package ${packageName}.framework.swagger;
+
+import io.swagger.jaxrs.config.BeanConfig;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+
+/**
+ * 类描述: swagger全局配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public BeanConfig beanConfig() {
+        BeanConfig config = new BeanConfig();
+        config.setConfigId("${sysCode}");
+        config.setTitle("SF API接口文档");
+        config.setDescription("这个API接口文档，主要为各个系统的业务提供后端的接口文档，支持多环境接口管理、在线实时查看、在线调试");
+        config.setVersion("v1");
+        config.setContact("xxx@sfmail.sf-express.com");
+        config.setHost("localhost:9026");
+        config.setSchemes(new String[]{"http"});
+        config.setBasePath("/${contextPath}");
+        config.setResourcePackage("${packageName}");
+        config.setPrettyPrint(true);
+        config.setScan(true);
+        return config;
+    }
+}

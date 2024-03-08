@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.litian.dancechar</groupId>
+	<artifactId>dancechar-framework</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>dancechar-framework</name>
+	<description>dancechar底层框架</description>
+	
+	<modules>
+		<module>dancechar-framework-common</module>
+		<module>dancechar-framework-parent</module>
+		<module>dancechar-framework-cache</module>
+		<module>dancechar-framework-delaymsg</module>
+		<module>dancechar-framework-encrypt</module>
+		<module>dancechar-framework-excel</module>
+		<module>dancechar-framework-jdbc</module>
+		<module>dancechar-framework-sentinel</module>
+		<module>dancechar-framework-traceing</module>
+		<module>dancechar-framework-nacos</module>
+		<module>dancechar-framework-kafka</module>
+		<module>dancechar-framework-log</module>
+		<module>dancechar-framework-es</module>
+		<module>dancechar-framework-oss</module>
+	</modules>
+</project>

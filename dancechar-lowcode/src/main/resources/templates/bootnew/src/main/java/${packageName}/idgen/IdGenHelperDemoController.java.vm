@@ -1,0 +1,28 @@
+package ${packageName}.idgen;
+
+
+import com.sf.cemp.framework.baseservice.client.idgen.util.IdGenHelper;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.framework.domain.Result;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Resource;
+
+/**
+ * 类描述: id生成器demo
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@RestController
+public class IdGenHelperDemoController {
+
+    @Resource
+    private IdGenHelper idGenHelper;
+
+    @GetMapping(value = "/getId")
+    public Result<Long> getId(){
+        return SFResultUtil.success(idGenHelper.getId());
+    }
+
+}

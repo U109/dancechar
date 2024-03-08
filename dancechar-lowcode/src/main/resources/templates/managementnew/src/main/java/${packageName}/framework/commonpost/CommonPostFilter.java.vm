@@ -1,0 +1,151 @@
+package ${packageName}.framework.commonpost;
+
+import com.alibaba.fastjson.JSONObject;
+import com.sf.cemp.framework.common.base.SFResponseResultCodeEnum;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.erui.cas.authorization.AuthorizationInterceptor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 类描述：自定义公共转发接口过滤器
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class CommonPostFilter implements Filter {
+    private static final List<String> COMMON_ROUTE_URLS = new ArrayList<>(2);
+    private static final String REG = "/";
+    public static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json;charset=utf-8";
+    public static final String CONTENT_TYPE = "Content-Type";
+
+    @Autowired
+    private CommonApiService commonApiService;
+
+    @Autowired
+    private AuthorizationInterceptor authorizationInterceptor;
+
+    @SneakyThrows
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
+        //匹配转发接口，匹配到直接将转发url前缀返回
+        String url = findRouteUrl(req.getRequestURI());
+
+        if (StringUtils.isNotBlank(url)) {
+            // 接口权限校验
+            authorizationInterceptor.preHandle(req, resp, null);
+            routeMethod(req, resp, url);
+            return;
+        }
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        //公共转发接口
+        COMMON_ROUTE_URLS.add("/commonRoutePost/");
+        COMMON_ROUTE_URLS.add("/commonRouteGet/");
+    }
+
+    @Override
+    public void destroy() {
+        log.info("自定义公共转发接口过滤器-destroy");
+    }
+
+    /**
+     * 匹配公共转发接口
+     *
+     * @param url 当前url
+     * @return 公共转发接口
+     */
+    private String findRouteUrl(String url) {
+        for (String routeUrl : COMMON_ROUTE_URLS) {
+            if (url.startsWith(routeUrl)) {
+                return routeUrl;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 转发至微服务接口
+     *
+     * @param req  HttpServletRequest
+     * @param resp HttpServletResponse
+     */
+    private void routeMethod(HttpServletRequest req, HttpServletResponse resp, String url) throws IOException {
+        try {
+
+            //截取出微服务的接口地址
+            url = req.getRequestURI().replace(url, REG);
+
+            String reqMethod = req.getMethod();
+
+            //GET请求不需要拼接session中的参数
+            if (StringUtils.isNotBlank(reqMethod) && RequestMethod.GET.name().equals(reqMethod)) {
+                Object result = commonApiService.httpGet(url);
+                writeResp(resp, result);
+                return;
+            }
+
+            //获取servlet body中的入参
+            BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            JSONObject params = JSONObject.parseObject(sb.toString());
+
+            params = params == null ? new JSONObject() : params;
+            // 组装sessionId header 头
+            Map<String,String> header = commonApiService.buildHeader();
+
+            Object result = commonApiService.httpPost(url, params, header);
+
+            writeResp(resp, result);
+        } catch (Exception e) {
+            resp.getWriter().write(SFResultUtil.error(SFResponseResultCodeEnum.ERR_UNKNOWN).toString());
+        }
+    }
+
+    /**
+     * 将结果写入resp
+     *
+     * @param resp   HttpServletResponse
+     * @param result 结果
+     */
+    private void writeResp(HttpServletResponse resp, Object result) throws IOException {
+        resp.setHeader(CONTENT_TYPE, APPLICATION_JSON_CHARSET_UTF_8);
+        if (result instanceof String) {
+            resp.getWriter().write((String) result);
+            return;
+        }
+        resp.getWriter().write(JSONObject.toJSONString(result));
+    }
+}

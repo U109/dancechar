@@ -1,0 +1,41 @@
+package ${packageName}.login.service.impl;
+
+import cn.hutool.json.JSONObject;
+import com.google.common.collect.Maps;
+import com.sf.cemp.framework.common.util.http.HttpClientPoolUtils;
+import com.sf.cemp.framework.common.util.json.SfJsonUtil;
+import ${packageName}.login.dto.DataDictionaryDTO;
+import ${packageName}.login.dto.SysDataDictionaryDTO;
+import ${packageName}.login.service.SysDataDictionaryService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 类描述：数据字段维护
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Service
+public class SysDataDictionaryServiceImpl implements SysDataDictionaryService {
+
+    @Value("${gwUrl}")
+    private String publicDomain;
+
+    @Override
+    public List<SysDataDictionaryDTO> getDictionaryList(DataDictionaryDTO dataDictionaryDTO) {
+        String url = publicDomain + "/scsCoupon/sysDataDictionary/dictionary/list";
+        Map<String, String> params = Maps.newHashMap();
+        params.put("dictionaryClass", dataDictionaryDTO.getDictionaryClass());
+        params.put("codeValue", dataDictionaryDTO.getCodeValue());
+        String serviceResult = HttpClientPoolUtils.httpPost(url, SfJsonUtil.toJsonStr(params));
+        JSONObject resultObj = SfJsonUtil.parseObj(serviceResult);
+        if (resultObj == null || !resultObj.getBool("success")) {
+            return null;
+        }
+        return resultObj.getJSONArray("obj").toList(SysDataDictionaryDTO.class);
+    }
+}

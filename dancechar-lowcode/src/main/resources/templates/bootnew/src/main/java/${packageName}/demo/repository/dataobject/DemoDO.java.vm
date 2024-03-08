@@ -1,0 +1,43 @@
+package ${packageName}.demo.repository.dataobject;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.sf.cemp.framework.common.plus.mybatis.BaseDO;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.math.BigDecimal;
+
+
+/**
+ * 类描述：demo DO对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+@TableName("t_demo")
+@EqualsAndHashCode(callSuper = false)
+@ToString(callSuper = true)
+public class DemoDO extends BaseDO {
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 员工工号
+     */
+    private String spNo;
+
+    /**
+     * 总金额
+     */
+    private BigDecimal totalAmt;
+
+    /**
+     * 可用余额
+     */
+    private BigDecimal usableAmt;
+}

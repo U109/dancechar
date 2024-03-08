@@ -1,0 +1,29 @@
+package ${packageName}.demo.controller;
+
+import ${packageName}.demo.dto.DemoDTO;
+import ${packageName}.demo.dto.DemoQueryReqDTO;
+import ${packageName}.demo.service.DemoService;
+import com.sf.cemp.framework.common.plus.page.PageResp;
+import com.sf.framework.domain.Result;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+
+/**
+ * 类描述: demo控制类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@RestController
+public class DemoController {
+    @Resource
+    private DemoService demoService;
+
+    @PostMapping(value = "/register")
+    public Result<PageResp<DemoDTO>> hello(@RequestBody DemoQueryReqDTO demoQueryReqDTO) {
+        return demoService.pageList(demoQueryReqDTO);
+    }
+}

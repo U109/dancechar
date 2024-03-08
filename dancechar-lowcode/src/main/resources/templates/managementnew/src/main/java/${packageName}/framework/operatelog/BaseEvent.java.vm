@@ -1,0 +1,17 @@
+package ${packageName}.framework.operatelog;
+
+import lombok.Data;
+
+/**
+ * 类描述: 基础事件对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class BaseEvent {
+    /**
+     * 事件名
+     */
+    private String eventName;
+}

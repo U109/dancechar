@@ -1,0 +1,27 @@
+spring.application.name=${sysCode}
+server.port=8080
+server.servlet.context-path=/${contextPath}
+
+spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
+
+
+#log4j2 \u914D\u7F6E
+logging.config=classpath:log4j2.xml
+
+cemp.url=http://public-int-gw.intsit.sfdc.com.cn:1080
+
+sqlLogShowSwitch=false
+
+
+
+
+# \u4E3A\u4E86\u67D0\u4E9B\u7248\u672C\u7684springboot  @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class}) \u65E0\u6CD5\u751F\u6548
+spring.autoconfigure.exclude=com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure,org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+#\u8BBE\u7F6E\u9ED8\u8BA4\u7684\u6570\u636E\u6E90\u6216\u8005\u6570\u636E\u6E90\u7EC4,\u9ED8\u8BA4\u503C\u5373\u4E3Amaster\uFF0C\u5982\u679C\u8BFB\u8005\u53EA\u662F\u5355\u6570\u636E\u6E90\u53EA\u9700\u8981\u6CE8\u91CA\u6389slave\u76F8\u5173\u914D\u7F6E\u5373\u53EF\uFF0C\u8FD9\u91CC\u4E3A\u4E86\u65B9\u4FBF\u6F14\u793Amaster\u4E0Eslave\u4FDD\u6301\u76F8\u540C
+
+
+#配置系统中哪些方法不打印入参、出参
+log.print.input.exclude.method=importxxx
+log.print.output.exclude.method=exportxxx
+
+

@@ -1,0 +1,52 @@
+package ${packageName}.common.enums;
+
+import com.sf.cemp.framework.common.base.SFIResultCode;
+
+/**
+ * 类描述: 返回码状态枚举
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public enum ${startupName}ResponseResultCodeEnum implements SFIResultCode {
+    /**
+     * 名字不能重复
+     */
+    NAME_NOT_REPEAT("5000000", "error.rpc.fail", "名字不能重复");
+
+    /**
+     * 返回码
+     */
+    private String code;
+
+    /**
+     * 返回信息
+     */
+    private String msg;
+
+    /**
+     * 返回信息描述
+     */
+    private String desc;
+
+        ${startupName}ResponseResultCodeEnum(String code, String msg, String desc) {
+        this.code = code;
+        this.msg = msg;
+        this.desc = desc;
+    }
+
+    @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public String getMsg() {
+        return msg;
+    }
+
+    @Override
+    public String getDesc() {
+        return desc;
+    }
+}

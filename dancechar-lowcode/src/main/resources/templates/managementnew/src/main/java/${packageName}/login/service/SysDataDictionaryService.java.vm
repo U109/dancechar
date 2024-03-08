@@ -1,0 +1,26 @@
+package ${packageName}.login.service;
+
+
+import ${packageName}.login.dto.DataDictionaryDTO;
+import ${packageName}.login.dto.SysDataDictionaryDTO;
+
+import java.util.List;
+
+/**
+ * 类描述：数据字典维护
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public interface SysDataDictionaryService {
+
+    /**
+     * 描述: 查询字典列表
+     *
+     * @param: dataDictionaryDTO
+     * @date: 2020/8/27 11:37
+     * @author: venyin[01379223]
+     */
+    List<SysDataDictionaryDTO> getDictionaryList(DataDictionaryDTO dataDictionaryDTO);
+
+}

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--6个优先级从高到低依次为：OFF、FATAL、ERROR、WARN、INFO、DEBUG、TRACE、 ALL。 -->
+<Configuration status="INFO" monitorInterval="120">
+    <Properties>
+        <Property name="LOG_HOME">./logs</Property>
+        <Property name="PROJECT_NAME">${sysCode}</Property>
+        <Property name="MODULE_NAME">${sysCode}</Property>
+        <!-- 测试5 M,生产500 M-->
+        <Property name="file_size">500 MB</Property>
+        <!-- 最大备份文件数 -->
+        <Property name="file_max_count">20</Property>
+        <!-- 文件保存时间-->
+        <Property name="keep_time">10d</Property>
+        <Property name="pattern">
+            %d{yyyy-MM-dd HH:mm:ss.SSS}[%t] %highlight{%C{1}.%M(%L)} %highlight{%-5level} [%X{traceId}] :%msg%n
+        </Property>
+        <Property name="file_pattern">[%d{yyyy-MM-dd HH:mm:ss,SSS}] [%t] [%C{1}:%L][%p] [%X{traceId}] -[%m]%n</Property>
+        <!-- 日志脱敏手机号开关，false为关闭脱敏，true为打开脱敏 -->
+        <Property name="desensitize">true</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <CustomPatternLayout pattern="${pattern}" desensitize="${desensitize}"/>
+        </Console>
+        <!-- ELK日志 -->
+        <RollingRandomAccessFile name="elkAppeder" fileName="${LOG_HOME}/ELK/${MODULE_NAME}-elk.log"
+                                 filePattern="${LOG_HOME}/ELK/${MODULE_NAME}-elk.log-%d{yyyy}">
+            <!--ThresholdFilter指定日志消息的输出最低层次-->
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <CustomPatternLayout pattern="${file_pattern}" desensitize="${desensitize}"/>
+            <Policies>
+                <!-- interval="1" 配合 filePattern 当前表示每天生成一次-->
+                <TimeBasedTriggeringPolicy interval="10"/>
+                <SizeBasedTriggeringPolicy size="${file_size}"/>
+            </Policies>
+        </RollingRandomAccessFile>
+        <!-- 通用日志 -->
+        <RollingRandomAccessFile name="infoAppeder" fileName="${LOG_HOME}/${MODULE_NAME}-info.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}-info-%d{yyyy-MM-dd}-%i.log">
+            <!-- >= WARN级别的，拒绝！-->
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <CustomPatternLayout pattern="${file_pattern}" desensitize="${desensitize}"/>
+            <Policies>
+                <!-- interval="1" 配合 filePattern 当前表示每天生成一次-->
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="${file_size}"/>
+            </Policies>
+            <!-- 允许的最大文件数量-->
+            <DefaultRolloverStrategy max="${file_max_count}">
+                <Delete basePath="${LOG_HOME}/" maxDepth="1">
+                    <IfFileName glob="${MODULE_NAME}-*.log"/>
+                    <!--!Note: 这里的age必须和filePattern协调, 后者是精确到HH, 这里就要写成xH, xd就不起作用
+                    另外, 数字最好>2, 否则可能造成删除的时候, 最近的文件还处于被占用状态,导致删除不成功!-->
+                    <IfLastModified age="${keep_time}">
+                    </IfLastModified>
+
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <!--错误日志输出-->
+        <RollingRandomAccessFile name="errorAppeder"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}-error.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}-error-%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <CustomPatternLayout pattern="${file_pattern}" desensitize="${desensitize}"/>
+            <Policies>
+                <!-- interval="1" 配合 filePattern 当前表示每天生成一次-->
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="${file_size}"/>
+            </Policies>
+            <!-- 允许的最大文件数量-->
+            <DefaultRolloverStrategy max="${file_max_count}">
+                <Delete basePath="${LOG_HOME}/" maxDepth="1">
+                    <IfFileName glob="*/${MODULE_NAME}-*.log"/>
+                    <!--!Note: 这里的age必须和filePattern协调, 后者是精确到HH, 这里就要写成xH, xd就不起作用
+                    另外, 数字最好>2, 否则可能造成删除的时候, 最近的文件还处于被占用状态,导致删除不成功!-->
+                    <IfLastModified age="${keep_time}">
+                    </IfLastModified>
+
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+        <!--filter日志输出-->
+        <RollingRandomAccessFile name="filterAppeder"
+                                 fileName="${LOG_HOME}/${MODULE_NAME}-filter.log"
+                                 filePattern="${LOG_HOME}/${MODULE_NAME}-filter-%d{yyyy-MM-dd}-%i.log">
+            <Filters>
+                <!-- >= WARN级别的，拒绝！-->
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <CustomPatternLayout pattern="${file_pattern}" desensitize="${desensitize}"/>
+            <Policies>
+                <!-- interval="1" 配合 filePattern 当前表示每天生成一次-->
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <!-- 测试环境 5 M -->
+                <SizeBasedTriggeringPolicy size="${file_size}"/>
+            </Policies>
+            <!-- 允许的最大文件数量-->
+            <DefaultRolloverStrategy max="${file_max_count}">
+                <Delete basePath="${LOG_HOME}/" maxDepth="1">
+                    <IfFileName glob="*/${MODULE_NAME}-*.log"/>
+                    <!--!Note: 这里的age必须和filePattern协调, 后者是精确到HH, 这里就要写成xH, xd就不起作用
+                    另外, 数字最好>2, 否则可能造成删除的时候, 最近的文件还处于被占用状态,导致删除不成功!-->
+                    <IfLastModified age="${keep_time}">
+                    </IfLastModified>
+
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+
+    </Appenders>
+
+    <Loggers>
+        <!--生产环境要求屏蔽  在looger中配置了additivity="false"，就不会反馈到root中 -->
+        <AsyncLogger additivity="true" name="com.mybatis" level="DEBUG" includeLocation="true">
+        </AsyncLogger>
+        <AsyncLogger additivity="true" name="java.sql.Connection" level="DEBUG" includeLocation="true">
+        </AsyncLogger>
+        <AsyncLogger additivity="true" name="java.sql.Statement" level="DEBUG" includeLocation="true">
+        </AsyncLogger>
+        <AsyncLogger additivity="true" name="java.sql.PreparedStatement" level="DEBUG" includeLocation="true">
+        </AsyncLogger>
+        <AsyncLogger additivity="true" name="java.sql.ResultSet" level="DEBUG" includeLocation="true">
+        </AsyncLogger>
+
+
+        <!-- 打印sql -->
+        <!--<AsyncLogger additivity="true" name="com.sf.member.dao" level="DEBUG" includeLocation="true">
+        </AsyncLogger>-->
+
+        <!-- 这里的name与private static final Logger logger = LoggerFactory.getLogger(LogAppender.FILTER)中的 LogAppender.FILTER一致
+        includeLocation="true"才会输出行号和类名
+        -->
+        <AsyncLogger name="filter" additivity="false" level="INFO" includeLocation="true">
+            <AppenderRef ref="filterAppeder"/>
+            <AppenderRef ref="elkAppeder"/>
+        </AsyncLogger>
+
+
+        <asyncRoot level="info" includeLocation="true">
+            <AppenderRef ref="errorAppeder"/>
+            <AppenderRef ref="elkAppeder"/>
+            <AppenderRef ref="infoAppeder"/>
+        </asyncRoot>
+
+    </Loggers>
+</Configuration>

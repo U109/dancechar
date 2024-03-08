@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: dancechar-gateway
+  profiles:
+    active: dev
+  http:
+    encoding:
+      force-response: true
+

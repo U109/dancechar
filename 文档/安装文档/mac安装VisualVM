@@ -1,0 +1,55 @@
+https://blog.csdn.net/xiaomolimicha/article/details/126911104?spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-2-126911104-blog-124161709.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-2-126911104-blog-124161709.pc_relevant_default&utm_relevant_index=3
+
+1、下载地址
+Mac VisualVm下载地址，如果连接打不开去搜索VisualVm官网下载即可。因为官网是在国外，所以下载有点慢，懂哥的话可以直接科学上网，下载就很快了，或者复制下载链接，去迅雷下载。
+2、下载好后直接安装
+
+3、安装好后修改VisualVM的java环境
+3.1、复制自己的java环境变量
+echo $JAVA_HOME
+
+
+ 3.2、修改VisualVM的配置文件
+打开visualvm的配置文件
+
+vim /Applications/VisualVM.app/Contents/Resources/visualvm/etc/visualvm.conf
+去到配置文件最后面，设置visualvm_jdkhome为自己系统的java环境保存并退出。
+
+
+
+ 4、修改好配置文件后就可以启动了
+4.1、去到启动目录
+cd /Applications/VisualVM.app/Contents/MacOS
+
+4.2、启动VisualVM
+⚠️注意：一定不能用管理员身份启动，如果用sudo bash visualvm启动，会把visualvm的缓存目录修改成root用户才能访问，后面bash visualvm就无法启动了，而且用sudo bash visualvm启动只能监测到root用户的java进程。
+
+⚠️总结：用什么用户visualvm，那么visualvm就只能监测该用户的java进程，一定不要用root用户权限启动visulvm否则会修改缓存目录为root用户的，导致其他用户无法启动visualvm。
+
+
+
+ 4.3、普通用户启动VisualVM
+bash visualvm
+启动后会弹出客户端，弹出后就说明安装成功了
+
+
+
+ 5、关于其他VisualVM的坑
+ 5.1、如何打开启动台中的VisualVM
+安装好后VIsualVm我们会发现启动台中有个可以直接打开VisualVM的app，但是点击打开会发现已损坏无法打开，其实这个app就是以普通用户快捷启动VisualVM，可能是因为Mac M1架构的问题无法直接打开，其实只需要我们去终端配置一下就好。
+
+
+
+
+
+5.2、在终端输入命令解除已损坏
+sudo xattr -r -d com.apple.quarantine /Applications/VisualVM.app/
+之后就能正常打开VisulalVM，以后就不要去终端bash visualvm了。
+
+6、关于VisualVM 其他说明
+VisualVM下载插件这里我就不说了，大家可以去搜索，有很多这个教学，同时在idea中配置VisualVM插件这里我也不说了，都可以在网上找到教程。
+
+
+————————————————
+版权声明：本文为CSDN博主「xiaomolimicha」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/xiaomolimicha/article/details/126911104

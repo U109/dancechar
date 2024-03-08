@@ -1,0 +1,132 @@
+package ${packageName}.disconf;
+
+import com.baidu.disconf.client.common.annotations.DisconfFile;
+import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
+import com.baidu.disconf.client.common.update.IDisconfUpdate;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.sf.cemp.core.framework.disconf.util.ApplicationContextUitls;
+import com.sf.cemp.core.framework.disconf.util.SfRefreshScope;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * 类描述:
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@DisconfUpdateService(classes = {SystemProperty.class})
+@DisconfFile(filename = "system.properties")
+@Component
+public class SystemProperty implements IDisconfUpdate {
+
+    private static Map<String, String> applicationMap = new HashMap<>();
+
+    public static String getValueFromDisConf(String key) {
+        return applicationMap.get(key);
+    }
+
+    public static String getAppName(){
+        return getValueFromDisConf("app.name");
+    }
+
+
+    @Autowired
+    private ApplicationContextUitls applicationContextUitls;
+
+    @Override
+    public void reload() {
+        try {
+            String flag = applicationContextUitls.getStaticValueFromProperties("disconf.enable.remote.conf");
+            String fileName = SystemProperty.class.getAnnotation(DisconfFile.class).filename();
+            String filePath =
+                applicationContextUitls.getStaticValueFromProperties("disconf.user_define_download_dir") + "/"
+                            + fileName;
+            if ("false".equals(flag)){
+                filePath = ResourceUtils.getURL("classpath:").getPath()+ "/" + fileName;
+            }
+            File target = new File(filePath);
+            if (!target.exists()){
+                //文件不存在
+                return;
+            }
+            Properties properties = new Properties();
+            InputStream inputStream = new FileInputStream(target);
+            properties.load(inputStream);
+            applicationMap = new HashMap<String, String>((Map) properties);
+            log.info("applicationMap={}", applicationMap);
+            refreshContext();
+        } catch (Exception e) {
+            log.error("更新disconf失败,{}", e);
+        }
+    }
+
+    /**
+     * 容器重启时初始化内存配置
+     */
+    @PostConstruct
+    public void reloading() {
+        reload();
+    }
+
+
+
+
+    public void refreshContext() {
+        String[] beanNamesForAnnotation = applicationContextUitls.getApplicationContext().getBeanNamesForAnnotation(
+            SfRefreshScope.class);
+        //log.info("beanNames={}",beanNamesForAnnotation);
+        rebind(beanNamesForAnnotation, applicationContextUitls.getApplicationContext());
+
+    }
+
+    /**
+     * 反射刷新bean里面@value字段的属性
+     * @param beanNamesForAnnotation
+     * @param applicationContext
+     */
+    public void rebind(String[] beanNamesForAnnotation, ApplicationContext applicationContext) {
+        if (applicationContext != null) {
+            try {
+                for (String name: beanNamesForAnnotation) {
+                    //	获取当前bean
+                    Object bean = applicationContext.getBean(name);
+                    Field[] fields=bean.getClass().getDeclaredFields();
+                    for (Field field : fields){
+                        if (field.isAnnotationPresent(Value.class)) {
+                            Value fieldAnnotation = field.getAnnotation(Value.class);
+                            String value = fieldAnnotation.value();
+                            // 反射获取字段, name成员变量
+                            // 由于name成员变量是private, 所以需要进行访问权限设定
+                            field.setAccessible(true);
+                            // 使用反射进行赋值
+                            if (ObjectUtils.isNotNull(value)) {
+                                field.set(bean,
+                                    applicationMap.get(value.replace("${", "").replace("}", "")));
+                            }
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e) {
+                log.error("rebind error {}",e.getMessage(),e);
+            }
+        }
+    }
+
+}

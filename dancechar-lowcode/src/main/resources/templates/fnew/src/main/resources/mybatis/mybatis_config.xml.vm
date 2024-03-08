@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <!-- Globally enables or disables any caches configured in any mapper under this configuration -->
+        <!--<setting name="cacheEnabled" value="true"/>-->
+        <!-- Sets the number of seconds the driver will wait for a response from the database -->
+        <!--<setting name="defaultStatementTimeout" value="3000"/>-->
+        <!-- Enables automatic mapping from classic database column names A_COLUMN to camel case classic Java property names aColumn -->
+        <!--<setting name="mapUnderscoreToCamelCase" value="true"/>-->
+        <!-- Allows JDBC support for generated keys. A compatible driver is required.
+        This setting forces generated keys to be used if set to true,
+         as some drivers deny compatibility but still work -->
+        <!--<setting name="useGeneratedKeys" value="true"/>-->
+
+        <!-- 开启驼峰自动映射 -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <!--解决，查询返回Map结果含null没有对应字段值问题，3.2版本以上可用 -->
+		<!-- 需要升级mybatis-3.2.7.jar、 mybatis-spring-1.2.2.jar包-->
+        <setting name="callSettersOnNulls" value="true"/>
+    </settings>
+
+    <!-- Continue going here -->
+
+</configuration>

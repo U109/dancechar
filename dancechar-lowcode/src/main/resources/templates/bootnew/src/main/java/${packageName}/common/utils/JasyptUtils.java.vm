@@ -1,0 +1,29 @@
+package ${packageName}.common.utils;
+
+import org.jasypt.intf.service.JasyptStatelessService;
+
+/**
+ * 类描述：mybatis多数据源加密工具类
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class JasyptUtils {
+
+
+    public static void main(String[] args) {
+
+
+        JasyptStatelessService service = new JasyptStatelessService();
+        String result = service
+            .encrypt("111", "PWDSalt", (String) null, (String) null, "PBEWithMD5AndDES",
+                (String) null, (String) null, (String)null, (String) null, (String) null, "", (String) null,
+                (String) null, (String) null, (String) null, (String) null, (String) null, (String) null, (String) null,
+                (String) null, (String) null, (String) null);
+        System.out.println("result=" + result);
+
+
+
+    }
+
+}

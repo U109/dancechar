@@ -1,0 +1,27 @@
+package ${packageName}.framework.operatelog;
+
+import com.alibaba.fastjson.JSON;
+import org.springframework.core.NamedThreadLocal;
+
+/**
+ * 类描述: 操作日志上下文对象
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class OperateLogContext {
+
+    private static final ThreadLocal<String> LOG_PARAM_CONTEXT = new NamedThreadLocal<>("Log param Context");
+
+    public static void set(LogParam log) {
+        LOG_PARAM_CONTEXT.set(JSON.toJSONString(log));
+    }
+
+    public static String get() {
+        return LOG_PARAM_CONTEXT.get();
+    }
+
+    public static void remove() {
+        LOG_PARAM_CONTEXT.remove();
+    }
+}

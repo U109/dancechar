@@ -1,0 +1,40 @@
+package ${packageName}.framework.exception;
+
+import com.alibaba.fastjson.JSON;
+import com.sf.cemp.framework.common.base.SFResponseResultCodeEnum;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import lombok.extern.slf4j.Slf4j;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import java.util.Set;
+
+/**
+ * 类描述: 全局异常处理
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
+
+    @Override
+    public Response toResponse(Throwable e) {
+        log.error("system error!errMsg:{}", e.getMessage(), e);
+        if (e instanceof ConstraintViolationException) {
+            StringBuilder builder = new StringBuilder();
+            ConstraintViolationException exception = (ConstraintViolationException) e;
+            Set<ConstraintViolation<?>> constraintViolations = exception.getConstraintViolations();
+            for (ConstraintViolation<?> constraintViolation : constraintViolations) {
+                builder.append(constraintViolation.getMessageTemplate()).append(";");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+            return Response.ok().entity(JSON.toJSONString(SFResultUtil
+                    .error(builder.toString(), SFResponseResultCodeEnum.ERR_PARAM_ILLEGAL.getCode()))).build();
+        }else {
+            return Response.ok().entity(JSON.toJSONString(SFResultUtil
+                    .error(SFResponseResultCodeEnum.ERR_UNKNOWN))).build();
+        }
+    }
+}

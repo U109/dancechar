@@ -1,0 +1,112 @@
+package ${packageName}.${functionDir}.service;
+
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.dtoName}DTO;
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.queryReqDTOName}QueryReqDTO;
+import ${packageName}.${functionDir}.manager.${genFileRenameDTO.managerName}Manager;
+import ${packageName}.framework.validate.ValidatorUtil;
+import com.sf.cemp.framework.common.base.BaseParam;
+import com.sf.cemp.framework.common.base.SFResultUtil;
+import com.sf.cemp.framework.common.plus.page.PageResp;
+import com.sf.cemp.framework.common.util.object.SfObjectUtil;
+import com.sf.framework.domain.Result;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import javax.annotation.Resource;
+
+/**
+ * 类描述：${genFunctions}服务
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Component
+@Slf4j
+public class ${className}Service {
+    @Resource
+    private ${genFileRenameDTO.managerName}Manager ${instanceName}Manager;
+
+    public Result<PageResp<${genFileRenameDTO.dtoName}DTO>> listPage(${genFileRenameDTO.queryReqDTOName}QueryReqDTO req) {
+        PageResp<${genFileRenameDTO.dtoName}DTO> pageResp = ${instanceName}Manager.listPage(req);
+        return SFResultUtil.success(pageResp);
+    }
+
+    public Result<Boolean> save(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+        ValidatorUtil.validateModel(${instanceName}DTO, BaseParam.addUpdateRequired.class);
+        return SFResultUtil.success(${instanceName}Manager.save(${instanceName}DTO));
+    }
+
+    public Result<Boolean> update(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+#if(${primaryKeyInfos.size()}>1)
+#set($sum = '')
+#foreach($primaryKey in ${primaryKeyInfos})
+#set($sum = $sum + 'SfObjectUtil.isNull('+${instanceName} + 'DTO.get'+$primaryKey.columnKeyName +'()) && ')
+#end
+#set($sum = $sum.substring(0,${sum.lastIndexOf("&&")} ))
+        if ($sum) {
+            return SFResultUtil.error("至少有一个主键不能为空");
+        }
+        return SFResultUtil.success(${instanceName}Manager.updateByMultiId(${instanceName}DTO));
+#else
+#if(!$tableField.get(0).columnComment)
+#set($tempData = $tableField.get(0).javaColumns)
+#else
+#set($tempData = $tableField.get(0).getColumnComment())
+#end
+        if (SfObjectUtil.isNull(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()())) {
+            return SFResultUtil.error("$tempData不能为空");
+        }
+        ValidatorUtil.validateModel(${instanceName}DTO, BaseParam.addUpdateRequired.class);
+        return SFResultUtil.success(${instanceName}Manager.update(${instanceName}DTO));
+#end
+    }
+
+    public Result<Boolean> deleteById(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+#if(${primaryKeyInfos.size()}>1)
+#set($sum = '')
+#foreach($primaryKey in ${primaryKeyInfos})
+#set($sum = $sum + 'SfObjectUtil.isNull('+${instanceName} + 'DTO.get'+$primaryKey.columnKeyName +'()) && ')
+#end
+#set($sum = $sum.substring(0,${sum.lastIndexOf("&&")} ))
+        if ($sum) {
+            return SFResultUtil.error("至少有一个主键不能为空");
+        }
+        return SFResultUtil.success(${instanceName}Manager.deleteByMultiId(${instanceName}DTO));
+#else
+#if(!$tableField.get(0).columnComment)
+#set($tempData = $tableField.get(0).javaColumns)
+#else
+#set($tempData = $tableField.get(0).getColumnComment())
+#end
+        if (SfObjectUtil.isNull(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()())) {
+            return SFResultUtil.error("$tempData不能为空");
+        }
+        return SFResultUtil.success(${instanceName}Manager.deleteById(${instanceName}DTO));
+#end
+    }
+
+    public Result<${genFileRenameDTO.dtoName}DTO> getWrapperById(${genFileRenameDTO.dtoName}DTO ${instanceName}DTO) {
+#if(${primaryKeyInfos.size()}>1)
+#set($sum = '')
+#foreach($primaryKey in ${primaryKeyInfos})
+#set($sum = $sum + 'SfObjectUtil.isNull('+${instanceName} + 'DTO.get'+$primaryKey.columnKeyName +'()) && ')
+#end
+#set($sum = $sum.substring(0,${sum.lastIndexOf("&&")} ))
+        if ($sum) {
+            return SFResultUtil.error("至少有一个主键不能为空");
+        }
+        return SFResultUtil.success(${instanceName}Manager.selectByMultiId(${instanceName}DTO));
+#else
+#if(!$tableField.get(0).columnComment)
+#set($tempData = $tableField.get(0).javaColumns)
+#else
+#set($tempData = $tableField.get(0).getColumnComment())
+#end
+        if (SfObjectUtil.isNull(${instanceName}DTO.get$tableField.get(0).getColumnKeyName()())) {
+            return SFResultUtil.error("$tempData不能为空");
+        }
+        return SFResultUtil.success(${instanceName}Manager.getWrapperById(${instanceName}DTO));
+#end
+    }
+}
+
+

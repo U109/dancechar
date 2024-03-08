@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.examples.excel.dao.inf.StudentDao">
+
+    <select id="findByPage" parameterType="com.litian.dancechar.examples.excel.dto.StudentReqDTO"
+            resultType="com.litian.dancechar.examples.excel.dao.entity.StudentDO">
+        SELECT
+        c.id,c.no,c.name
+        FROM
+        t_student c
+        WHERE
+        c.delete_flag = 0
+        <if test="no != null and no != ''">
+            and c.no = #{no}
+        </if>
+        <if test="name != null and name != ''">
+            and c.name = #{name}
+        </if>
+        order by c.id desc limit #{pageBegin}, #{pageSize}
+    </select>
+</mapper>

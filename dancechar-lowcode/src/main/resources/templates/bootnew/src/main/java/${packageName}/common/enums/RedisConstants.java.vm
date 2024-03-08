@@ -1,0 +1,11 @@
+package ${packageName}.common.enums;
+
+/**
+ * 类描述：常量配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class RedisConstants {
+    public static final long expireTime = 24*3600*1000;
+}

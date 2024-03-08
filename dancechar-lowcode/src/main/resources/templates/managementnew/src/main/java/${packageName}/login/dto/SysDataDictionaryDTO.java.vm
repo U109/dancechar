@@ -1,0 +1,42 @@
+package ${packageName}.login.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 类描述：字典实体
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Data
+public class SysDataDictionaryDTO implements Serializable {
+
+    private String id;
+    @ApiModelProperty(value="显示值对应的value",name="codeValue")
+    private String codeValue;
+    @ApiModelProperty(value="显示值",name="codeName")
+    private String codeName;
+    @ApiModelProperty(value="字段类型",name="dictionaryClass")
+    private String dictionaryClass;
+    @ApiModelProperty(value="字典类型名称",name="dictionaryName")
+    private String dictionaryName;
+    @ApiModelProperty(value="排序",name="sort")
+    private Long sort;
+    @ApiModelProperty(value="是否显示",name="isDisplay")
+    private String isDisplay;
+    @ApiModelProperty(value="创建人",name="createdBy")
+    private String createdBy;
+    @ApiModelProperty(value="创建时间",name="createdTime")
+    private Date createdTime;
+    private String createdTimeFmt;
+    @ApiModelProperty(value="记录修改人",name="updatedBy")
+    private String updatedBy;
+    @ApiModelProperty(value="记录修改时间",name="updatedTime")
+    private Date updatedTime;
+    private String updatedTimeFmt;
+
+}

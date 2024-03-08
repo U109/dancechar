@@ -1,0 +1,26 @@
+package ${packageName}.framework.notify;
+
+import com.sf.cemp.core.framework.redis.util.SfRedisUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+/**
+ * 类描述: 通过redis的发布订阅实现消息发布(常用的场景-比如管理后台修改了配置数据，通过redis发布，
+ * 在订阅消息类刷新本地缓存，解决分布式本地缓存更新问题)
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Slf4j
+@Component
+public class PublishRedisMessage {
+    @Resource
+    private SfRedisUtil sfRedisUtil;
+
+    public void publish(String topic, Object object) {
+        sfRedisUtil.getRedisTemplate().convertAndSend(topic, object);
+        log.info("通过redis 发送消息-topic:{}", topic);
+    }
+}

@@ -1,0 +1,170 @@
+/*
+* Copyright 2015-2020 SF-Express Tech Company. 
+*/
+package ${packageName}.common.constants;
+
+/**
+ * 框架模板服务系统下的所有错误码
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public class MessageCode {
+	private MessageCode() {
+	}
+
+	/** 参数校验失败 */
+	public static final String PARAM_INVALID = "PARAM_INVALID";
+	/** 方法抛出异常 */
+	public static final String SYSTEM_ERROR = "SYSTEM_ERROR";
+	
+	/** 方法抛出异常 */
+	public static final String EXCHANGE_ERROR = "exchangeError";
+	
+	/** 库存不足 */
+	public static final String EXCHANGE_REPERTORY_SHORT = "EXCHANGE_REPERTORY_SHORT";
+	
+	/** 活动审核状态变更错误*/
+	public static final String ALTER_CHECK_ERROR="ALTER_CHECK_ERROR";
+	
+	/** 查询异常*/
+	public static final String QUERY_ACITIVITY_EXCEPTION = "QUERY-40000";
+	
+	/** 条件异常*/
+	public static final String FIND_BY_ID_ACITIVITY_EXCEPTION = "FIND_BY_ID-40001";
+	
+	/** 活动新增*/
+	public static final String ADD_ACITIVITY_EXCEPTION = "ADD-40002";
+	
+	/** 删除异常*/
+	public static final String DELETE_ACITIVITY_EXCEPTION = "DELETE-40003";
+	
+	/** 修改异常*/
+	public static final String UPDATE_ACITIVITY_EXCEPTION = "UPDATE-40004";
+    /** 扣减积分失败*/
+	public static final String UPDATE_INTEGRAL_EXCEPTION = "UPDATE-INTEGRAL-40004";
+
+	/** 数据库更新异常*/
+	public static final String DB_UPDATE_EXCEPTION="DB_UPDATE_EXCEPTION";
+	
+	/**超过活动参与次数上限错误*/
+	public static final String OVER_AC_MAX_ERROR="OVER_AC_MAX_ERROR";
+	/**小哥发放次数超过上限错误*/
+	public static final String OVER_BROTHER_AC_MAX_ERROR="OVER_BROTHER_AC_MAX_ERROR";
+	
+	/**不是活动客户*/
+	public static final String NOT_ACTIVITY_USER="NOT_ACTIVITY_USER";
+	
+	/**加密失败*/
+	public static final String ENCRYPTION_ERROR= "ENCRYPTION_ERROR";
+	
+	/**调用接口失败*/
+	public static final String CALLING_INTERFACE_ERROR="CALLING_INTERFACE_ERROR";
+	
+	/**解密失败*/
+	public static final String DECRYPTION_ERROR= "DECRYPTION_ERROR";
+	
+	/**未配置秘钥*/
+	public static final String SEC_NOT_EXSITS= "SEC_NOT_EXSITS";
+	
+	/**userId或者mobile必须存在一个*/
+	public static final String USERID_MOBILE_ALL_NOT_EXSITS= "USERID_MOBILE_ALL_NOT_EXSITS";
+
+	/** SYSTEM接口下的参数不能为空 */
+	public static final String SYSTEM_PARAMETER_NOT_NULL = "01";
+	
+	/**熔断降级 */
+	public static final String FUSE_CURRENT_LIMIT = "SFMEM-FUSE-CURRENT-LIMIT";
+
+	/** 导入失败*/
+	public static final String IMPORT_ERROR = "IMPORT_ERROR";
+	
+	/** 活动已失效*/
+	public static final String ACTIVITY_EXPIRED= "ACTIVITY_EXPIRED";
+	
+	/** 活动已领取*/
+	public static final String ACTIVITY_ALREADY_RECEIVE= "ACTIVITY_ALREADY_RECEIVE";
+	
+	/** 不在活动范围你*/
+	public static final String NOT_WITHIN_ACTIVITY= "NOT_WITHIN_ACTIVITY";
+	
+	/** 参数为空 */
+	public static final String PARAM_NULL = "PARAM_NULL";
+	
+	/**包装返券已领取 */
+	public static final String PACK_RECEIVED = "PACK_RECEIVED";
+	
+	/**包装返券领取达到上限*/
+	public static final String PACK_RECEIV_MAX = "PACK_RECEIV_MAX";
+	
+	/**不符合包装返券条件*/
+	public static final String PACK_NON_CONFORMITY = "PACK_NON_CONFORMITY";
+
+	/**手机号不正确*/
+	public static final String PARAM_MOBILE_INVALID = "PARAM_MOBILE_INVALID";
+	
+	public static final String ERROR_REQUEST = "ERROR_REQUEST";
+	
+	public static final String REPEAT_REQUEST = "REPEAT_REQUEST";
+	
+	public static final String PARAMETER_ERROR = "PARAMETER_ERROR";
+	
+	public static final String NOT_EXISTS_PACKET = "NOT_EXISTS_PACKET";
+	
+	public static final String NOT_EXISTS_USER_GROUP = "NOT_EXISTS_USER_GROUP";
+
+	/**运单信息异常*/
+	public static final String WAYBILL_INFO_ERROR = "WAYBILL_INFO_ERROR";
+
+	/**状态已结束*/
+	public static final String STATUS_HAS_END = "STATUS_HAS_END";
+
+	/**已享受折扣*/
+	public static final String HAS_ENJOY_DISCOUNT = "HAS_ENJOY_DISCOUNT";
+
+	/**寄付件不能享受到付折扣*/
+	public static final String TOPAY_NOT_ENJOY_DISCOUNT = "TOPAY_NOT_ENJOY_DISCOUNT";
+
+	/**信息不匹配*/
+	public static final String DATA_NOT_MATCHING = "DATA_NOT_MATCHING";
+
+	/**运单数量超过返券数*/
+	public static final String WAYBILL_EXCEED_COUPON_SIZE = "WAYBILL_EXCEED_COUPON_SIZE";
+
+	/**小哥已关小黑屋*/
+	public static final String IS_SMALL_BLACK_HOUSE = "IS_SMALL_BLACK_HOUSE";
+
+	/**客户已关小黑屋*/
+	public static final String IS_CLIENT_BLACK_HOUSE = "IS_CLIENT_BLACK_HOUSE";
+	
+	/**超过发送次数上限错误*/
+	public static final String DAY_COUNT_MAX_ERROR="DAY_COUNT_MAX_ERROR";
+
+	/**产品类型不匹配*/
+	public static final String PRODUCT_TYPE_NOT_MATCHING = "PRODUCT_TYPE_NOT_MATCHING";
+
+	/**活动不存在未启用、未开始*/
+	public static final String AC_NOT_START = "AC_NOT_START";
+
+	/**活动已结束*/
+	public static final String AC_IS_END = "AC_IS_END";
+	
+	/**活动不存在*/
+	public static final String AC_NOT_EXIST = "AC_NOT_EXIST";
+	
+    /**用户不存在*/
+    public static final String USER_DOES_NOT_EXIST = "USER_NOT_EXIST";
+
+    /**未查询到数据*/
+    public static final String DATA_IS_EMPTY = "data_is_empty";
+    /**系统繁忙，请稍后再试*/
+    public static final String ERROR_UNKNOWN = "error.unknown";
+    /**礼包不存在*/
+    public static final String PACKET_NOT_EXIST = "PACKET_NOT_EXIST";
+
+	/** 用户是收派员 */
+	public static final String USER_IS_COURIER = "USER_IS_COURIER";
+
+	/** 该运单还未做揽收(50交仓) */
+	public static final String WAYBILL_NOT_COLLECTED = "WAYBILL_NOT_COLLECTED";
+}

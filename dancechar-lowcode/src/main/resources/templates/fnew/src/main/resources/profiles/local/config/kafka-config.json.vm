@@ -1,0 +1,44 @@
+{
+    "classMap":{
+        "defaultClass":"java.lang.String",
+        "kafkaConfig":"com.sf.cemp.core.framework.kafka.util.KafkaConfigDto"
+    },
+    "kafkaConfig":{
+#foreach ($middleare in $middleareList)
+#if ($middleare == 'KAFKA' && ${fcodeKafkaBaseInfoList})
+#foreach ($fcodeKafkaBaseInfoDTO in $fcodeKafkaBaseInfoList)
+#if ($velocityCount!=$!{fcodeKafkaBaseInfoList.size()})
+        "${fcodeKafkaBaseInfoDTO.topicName}": {
+            "consumerSwitch": "off",
+            "clusterName":"${fcodeKafkaBaseInfoDTO.clusterName}",
+            "monitorUrl":"${fcodeKafkaBaseInfoDTO.monitorUrl}",
+            "threadCount":2,
+            "token": "${fcodeKafkaBaseInfoDTO.consumerName}:${fcodeKafkaBaseInfoDTO.checkCode}",
+            "topicName":"${fcodeKafkaBaseInfoDTO.topicName}"
+        },
+#else
+        "${fcodeKafkaBaseInfoDTO.topicName}": {
+            "consumerSwitch": "off",
+            "clusterName":"${fcodeKafkaBaseInfoDTO.clusterName}",
+            "monitorUrl":"${fcodeKafkaBaseInfoDTO.monitorUrl}",
+            "threadCount":2,
+            "token": "${fcodeKafkaBaseInfoDTO.consumerName}:${fcodeKafkaBaseInfoDTO.checkCode}",
+            "topicName":"${fcodeKafkaBaseInfoDTO.topicName}"
+        }
+#end
+#end
+}
+#end
+#end
+#if ($middleare == 'KAFKA' && !${fcodeKafkaBaseInfoList})
+        "kafkaconfigkey.kafka.topic": {
+            "consumerSwitch": "off",
+            "clusterName":"xxxx",
+            "monitorUrl":"xxxx",
+            "threadCount":2,
+            "token":"ESG_CCSP_CORE_SIT:KKOMfcBE",
+            "topicName":"xxxx"
+        }
+    }
+#end
+}

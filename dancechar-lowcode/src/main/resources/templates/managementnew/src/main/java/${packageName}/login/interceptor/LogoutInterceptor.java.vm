@@ -1,0 +1,29 @@
+package ${packageName}.login.interceptor;
+
+import com.sf.erui.web.login.LoginController;
+import com.sf.integration.cas.filter.util.CasHelper;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+/**
+ * Logout拦截器，由于框架本身cas登陆时候退出未删除cookie导致退出bug
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ * @see LoginController#checkType(HttpServletRequest, HttpServletResponse)
+ */
+public class LogoutInterceptor extends HandlerInterceptorAdapter {
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
+        CasHelper.deleteCookie(response);
+
+        return true;
+    }
+
+
+}

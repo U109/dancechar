@@ -1,0 +1,29 @@
+package ${packageName}.${functionDir}.repository.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.dtoName}DTO;
+import ${packageName}.${functionDir}.dto.${genFileRenameDTO.queryReqDTOName}QueryReqDTO;
+import ${packageName}.${functionDir}.repository.dataobject.${genFileRenameDTO.doName}DO;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+#if (!${primary})
+import com.baomidou.dynamic.datasource.annotation.DS;
+#end
+
+
+/**
+ * 类描述：${genFunctions}mapper
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+#if (!${primary})
+@DS("${dbTag}")
+#end
+@Mapper
+#if(${primaryKeyInfos.size()}>1)
+public interface ${className}Mapper extends MppBaseMapper<${genFileRenameDTO.doName}DO> {
+#else
+public interface ${className}Mapper extends BaseMapper<${genFileRenameDTO.doName}DO> {
+#end
+}

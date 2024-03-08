@@ -1,0 +1,49 @@
+package ${packageName}.framework.operatelog;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * 类描述: 业务日志注解
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Inherited
+@Documented
+public @interface OperateLogAnnotation {
+
+    /**
+     * 菜单名字
+     *
+     * @return 菜单名字
+     */
+    String menuName() default "";
+
+    /**
+     * 按钮名字
+     *
+     * @return 按钮名字
+     */
+    String menuBtn() default "";
+
+    /**
+     * 操作内容
+     *
+     * @return 操作内容
+     */
+    String opContent() default "";
+
+    /**
+     * 关键字
+     *
+     * @return 关键字
+     */
+    String remark() default "";
+}

@@ -1,0 +1,88 @@
+package ${packageName}.common.constants;
+
+/**
+ * 系统常量
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+public final class SystemContants {
+
+	private SystemContants(){
+
+	}
+
+	public static final String ONE = "1";
+	public static final String TWO = "2";
+	public static final String THREE = "3";
+
+	public static final String SYS_FLG_FALSE = "0";// 系统假
+
+	public static final String COMMON_KEY="common_key";
+
+	public static final String CONF_KEY = "conf-activity-redis";
+
+	public static final String GOLD_FINGER_KEY = "gold_finger_";
+
+	public static final int size=1000;
+
+	public static final String PARAM_USERID_NULL = "入参userId不能为空";
+
+	public static final String EXCEPTION = "EXCEPTION";
+
+	public static final String IDS_PARAMS_NULL = "IDS_PARAMS_NULL";//"请选择至少一条更新记录！"
+
+	public static final String DATA_EXISTS = "DATA_EXISTS";// 已存在
+
+	public static final String IDS_PARAMS_NULL_MSG  ="请选择至少一条更新记录！";//
+
+	public static final String ALREADY_REVISIT_EMP_CODE = "ALREADY_REVISIT_EMP_CODE";//"选择记录中存在已回访记录,请重新选择修改！"
+
+	public static final String ALREADY_REVISIT_EMP_CODE_MSG = "选择记录中存在已回访记录,请重新选择修改！";
+
+	public static final String ALREADY_REVISIT_EMP_NOT_CODE_MSG = "记录中不存在未回访客户,请重新选择修改！";
+
+	public static final String EXCEPTION_MSG = "更新失败!";
+
+	public static final String SST_EVIP_EMAIL_CODE ="sst_evip_email_code";
+
+	public static final String SST_EVIP_EMAIL_OVERDUE_SECOND ="SST_EVIP_EMAIL_OVERDUE_SECOND";
+
+	public static final String SST_EVIP_EMAIL_DAY_COUNT = "SST_EVIP_EMAIL_DAY_COUNT";
+	public static final String SP_INVITE_DOWN_APP_PROP = "SP_INVITE_DOWN_APP_PROP";
+	public static final String OBJ = "obj";
+	public static final String SUCCESS = "success";
+	public static final String GROUP_EXIST_BIND_ACTIVITY="group_exist_bind_activity";
+
+	public class AccessHandle {
+		public static final String INCLUDE_PATHS = "valide_include_urls";
+		public static final String CHANNEL = "systemId";
+		public static final String ACCESS_IP = "_api_ip";
+		public static final String ACCESS_PATHS = "_api_paths";
+		public static final String MAX_VISIT_COUNT = "_max_count";
+		public static final String PRIVATE_KEY = "_pri_key";
+		public static final String MAX_TIME_OUT = "activity_max_time_out";
+		public static final String VISIT_DATE = "visitDate";
+    }
+
+
+	//客群标签提交记录
+	public class GroupTagPsuh {
+		public static final int SUCCESS_CODE = 200;//系统返回的正确编码
+		public static final int CUSTOMER_TYPE_B = 1;//客户类型,1表示b端；
+		public static final int CUSTOMER_TYPE_C = 2;//2表示c端
+		public static final boolean SUCCESS = true;
+		//推送状态（0-已提交 1-执行中 2-执行中断  3-执行异常 4-执行成功 5-任务时间超时）
+		public static final String SUBMIT = "0";
+		public static final String PROCESS_UNDERWAY = "1";
+		public static final String PROCESS_INTERRUPT = "2";
+		public static final String PROCESS_EXCEPTION = "3";
+		public static final String PROCESS_SUCCESS = "4";
+		public static final String PROCESS_TIMEOUT = "5";
+		public static final int EXPIRE_TIME = 60 *60 * 24 * 2;//2d
+		public static final String GROUP_TAG_PUSH="group_tag_push_";
+
+		private GroupTagPsuh() {
+		}
+	}
+}

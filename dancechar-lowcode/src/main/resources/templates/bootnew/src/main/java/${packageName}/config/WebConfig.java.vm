@@ -1,0 +1,27 @@
+package ${packageName}.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+/**
+ * 类描述：mvc配置
+ *
+ * @author ${authorName}
+ * @date ${createDateString}
+ */
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // spring mvc 通过注入RequestMappingHandlerAdapter,获取其messageConverters并修改。
+        converters.removeIf(converter -> converter instanceof StringHttpMessageConverter);
+        // 此处0应该替换为上面查找到的位置。
+        converters.add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+    }
+}
